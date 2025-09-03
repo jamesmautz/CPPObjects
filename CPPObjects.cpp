@@ -23,6 +23,13 @@ int enterNumber()
     return x;
 }
 
+//Check if != 0 for whether a number is odd. If you use x == 1 and x < 0, it will always return false
+//because the number will be negative.
+bool isOdd(int x) 
+{
+    return (x % 2) != 0;
+}
+
 int main()
 {
     std::cout << "Enter your name: \n";
@@ -37,7 +44,17 @@ int main()
     std::cout << "Enter your age: \n";
     int age;
     std::cin >> age;
+    
     std::cout << "Hello, " << name << ".\n";
+
+    if (isOdd(age))
+    {
+        std::cout << "Your age is an odd number.\n";
+    }
+    else
+    {
+        std::cout << "Your age is an even number.\n";
+    }
 
     std::cout << "The length of your name + your age is: " << age + name.length() << '\n';
 
@@ -74,7 +91,7 @@ int main()
     int num = 1;
     int arrSize = sizeof(arr) / 4;
 
-    for (int i = 1; i < arrSize; i++)
+    for (int i = 1; i < arrSize; ++i)
     {
         //std::cout << arr[i] << '\n';
         if (arr[i] == a) {
