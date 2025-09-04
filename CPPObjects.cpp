@@ -58,6 +58,17 @@ int main()
 
     std::cout << "The length of your name + your age is: " << age + name.length() << '\n';
 
+    const int a = 5;
+    const int b = 4;
+    //Conditional operator:
+    //Can be used anywhere an expression is accepted.(Can be used as a constexpr)
+    constexpr int max = ((a > b) ? a : b);
+    //Above statement is similar to an if/else statement.
+    // Same as:
+    // if(x > y)
+    //    max = a;
+    // else
+    //    max = b;
     //#if 0 is similar to commmenting something out. use #if 1 to uncomment.
     #if 0
     //The %= operator assigns the initial value(age in this case) to be equal to the remainder.
