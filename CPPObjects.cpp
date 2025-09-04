@@ -32,6 +32,7 @@ bool isOdd(int x)
 
 int main()
 {
+    #if 0
     std::cout << "Enter your name: \n";
 
     std::string name;
@@ -69,6 +70,7 @@ int main()
     //    max = a;
     // else
     //    max = b;
+    #endif
     //#if 0 is similar to commmenting something out. use #if 1 to uncomment.
     #if 0
     //The %= operator assigns the initial value(age in this case) to be equal to the remainder.
@@ -95,8 +97,8 @@ int main()
     std::cout << "Enter one more number: ";
     int a = enterNumber();
     std::cout << "Number is: " << a << ".\n";
-    
-
+    #endif
+    #if 0
     int arr[5] = { 2, 1, 2, 1, 2 };
     int a = arr[0];
     int num = 1;
