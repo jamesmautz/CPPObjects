@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="7.1-10.xnotes.cpp" />
     <ClCompile Include="Add.cpp" />
     <ClCompile Include="CPPObjects.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>

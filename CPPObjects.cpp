@@ -29,7 +29,7 @@ bool isOdd(int x)
 {
     return (x % 2) != 0;
 }
-
+#if 0
 int main()
 {
     #if 0
@@ -135,3 +135,4 @@ int main()
     #endif
     return 0;
 }
+#endif

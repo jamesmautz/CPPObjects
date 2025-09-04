@@ -5,13 +5,13 @@
 #include <iostream>
 
 
-namespace Addition 
+namespace Addition
 {
-    int doSomething(int x, int y) 
+    int doSomething(int x, int y)
     {
         return x + y;
     }
-    
+
 }
 
 namespace Subtraction
