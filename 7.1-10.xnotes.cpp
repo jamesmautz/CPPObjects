@@ -7,13 +7,35 @@
 
 //global variable, with global scope. Try to declare global vars in a namespace.
 //int g_pi = 3.14;
-
 //Global variables can(and should generally) be stored within a namespace.
 namespace GlobalVars
 {
     //Naming convention for global vars in C++ is to generally use "g" or "g_" before the name.
     double g_pi = 3.14;
 }
+
+//INTERNAL LINKAGE NOTES:
+#if 0
+//Internal linkage is useful to ensure that certain variables or functions aren't accessed by other files.
+//static keyword denotes internal linked global variable.
+static int g_twelve = 12;
+//const and constexpr global variables are internally linked by default.
+const int g_x = 1;
+constexpr int g_y = 2;
+//static keyword can be appiled to functions to ensure internal linkage.
+static int foo() {}
+#endif
+
+#if 0
+//non externally linked global variable:
+int g_x = 1;
+//extern keyword is used to externally link a global variable. It is good practice to only externally link
+//const or constexpr variables.
+extern const int g_y = 1;
+//Functions are externally linked by default. You just need a forward declaration in whatever external file
+//that you wish to use the function in.
+void foo() {}
+#endif
 
 int main()
 {
@@ -62,10 +84,13 @@ int main()
     //NOTE: Cannot call functions from outside scope of smallest scope namespace. Can't call doSomething here.
     //std::cout << AllSub::doSomething(1, 1) << '\n';
 #endif
-//LOCAL VARIABLES NOTES:
+//LOCAL VARIABLES + Variable Shadowing NOTES:
 #if 0
     //Very interesting difference between Java and C++. You can instantiate a new x, set it to a new value,
     //but after it leaves the if block(or whatever block the new x is in) it returns to it's old value.
+    //This is called name shadowing, the initial x is hidden while the new x is in scope.
+    //While shadowed, there is no way to directly access the outer x.
+    //Shadowing can be done to global variables if they have the same name as well.
     //This snippet prints: 0 3 0
     int x = 0;
     if (true) {
