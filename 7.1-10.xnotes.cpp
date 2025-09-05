@@ -3,29 +3,15 @@
 // code. This project will contain code used and covered in Learn C++ from lessons 7.1-10.x.
 
 #include <iostream>
+#include "NameSpaceHeaders.h"
 
 
-namespace Addition
-{
-    int doSomething(int x, int y)
-    {
-        return x + y;
-    }
-
-}
-
-namespace Subtraction
-{
-    int doSomething(int x, int y)
-    {
-        return x - y;
-    }
-
-}
-
-//commit test comment.
 int main()
 {
-    std::cout << Addition::doSomething(5, 5);
+    std::cout << Addition::doSomething(5, 5) << '\n';
+    std::cout << Subtraction::doSomething(5, 5) << '\n';
+    //Uses nested namespaces. In this case I nested double subtraction inside the subtraction namespace.
+    std::cout << Subtraction::DoubleSub::doubleSubtraction(5.5, 3.2) << '\n';
+
     return 0;
 }

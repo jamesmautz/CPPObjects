@@ -24,9 +24,15 @@
     <ClCompile Include="7.1-10.xnotes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NameSpaceHeaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Add.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NameSpaceHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
