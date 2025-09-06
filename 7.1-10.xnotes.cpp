@@ -4,16 +4,19 @@
 
 #include <iostream>
 #include "NameSpaceHeaders.h"
+#include"GlobalConsts.h"
 
+//THIS CODE IS DEAD AS A RESULT OF INLINE GLOBAL CONSTANTS FROM THE GlobalConsts.h file.
 //global variable, with global scope. Try to declare global vars in a namespace.
 //int g_pi = 3.14;
 //Global variables can(and should generally) be stored within a namespace.
+#if 0
 namespace GlobalVars
 {
     //Naming convention for global vars in C++ is to generally use "g" or "g_" before the name.
     double g_pi = 3.14;
 }
-
+#endif
 //INTERNAL LINKAGE NOTES:
 #if 0
 //Internal linkage is useful to ensure that certain variables or functions aren't accessed by other files.
@@ -39,6 +42,16 @@ void foo() {}
 
 int main()
 {
+#if 0
+    //Inline Global Constants:
+    //This uses inline global constants from the GlobalConsts header file. Using inline constexpr variables in
+    //a header file allows for global constants to be used across various files.
+    std::cout << "Enter a radius: ";
+    double radius;
+    std::cin >> radius;
+
+    std::cout << "The area is: " << GlobalConsts::pi * radius * radius;
+#endif
     //GLOBAL VARIABLES NOTES:
 #if 0
     //Calling global variabl from within a namespace.
