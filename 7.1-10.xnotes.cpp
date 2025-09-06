@@ -5,7 +5,41 @@
 #include <iostream>
 #include "NameSpaceHeaders.h"
 #include"GlobalConsts.h"
-
+#include "Constants.h"
+#if 0
+//INLINE AND UNNAMED NAMESPACE CODE:
+//Using inline namespaces allows for a form of versioning. Allows easier changes to namespace functions.
+inline namespace V1
+{
+    void doSomething()
+    {
+        std::cout << "V1\n";
+    }
+}
+namespace V2
+{
+    void doSomething()
+    {
+        std::cout << "V2\n";
+    }
+}
+//Unnamed namespaces cause internal linkage for all functions/vars contained within.
+//Essentially everything that is in the unnamed namespace is static.
+namespace
+{
+    void doSomething()
+    {
+        std::cout << "V1\n";
+    }
+}
+//^^^^^
+//This is identical to the above code.
+static void doSomething()
+{
+    std::cout << "V!\n"
+}
+#endif
+//GLOBAL VAR CODE:
 //THIS CODE IS DEAD AS A RESULT OF INLINE GLOBAL CONSTANTS FROM THE GlobalConsts.h file.
 //global variable, with global scope. Try to declare global vars in a namespace.
 //int g_pi = 3.14;
@@ -39,15 +73,69 @@ extern const int g_y = 1;
 //that you wish to use the function in.
 void foo() {}
 #endif
+#if 0
+//Used in 7.x Q3
+int accumulate(int x) 
+{
+    static int total = 0;
+    total += x;
+    return total;
 
+}
+#endif
 int main()
 {
+#if 0
+    //7.x Q1
+    std::cout << "Enter a positive number: ";
+    int num{};
+    std::cin >> num;
 
 
+    if (num < 0)
+    {
+        std::cout << "Negative number entered.  Making positive.\n";
+        num = -num;
+    }
+        
+    
+
+    std::cout << "You entered: " << num;
+
+    return 0;
+    //7.x Q2
+    std::cout << "How many students are in your class? ";
+    int students{};
+    std::cin >> students;
+
+
+    if (students > Constants::maxClassSize)
+        std::cout << "There are too many students in this class";
+    else
+        std::cout << "This class isn't too large";
+
+    return 0;
+
+    //7.x Q3
+    std::cout << accumulate(4) << '\n'; // prints 4
+    std::cout << accumulate(3) << '\n'; // prints 7
+    std::cout << accumulate(2) << '\n'; // prints 9
+    std::cout << accumulate(1) << '\n'; // prints 10
+
+    return 0;
+#endif
+#if 0
+    //INLINE AND UNNAMED NAMESPACE CODE:
+    //Unnamed namespace allows this function to be called without qualifiers.
+    V1::doSomething();
+    V2::doSomething();
+    //Calls the inline namespace(V1):
+    doSomething();
+#endif
 #if 0
     //STATIC LOCAL VARIABLE NOTES:
     //When applied to global variables, the static keyword causes internal linkage, meaning it cannot be exported
-    // to other files.
+    // to other files. By default, global variables have static duration.
     // When applied to a local variable(as shown below) the keyword declares the variable to have static duration,
     // which means the variable is created once and won't be destroyed until the program ends.
     //incrementAndPrint contained in NameSpaceHeaders

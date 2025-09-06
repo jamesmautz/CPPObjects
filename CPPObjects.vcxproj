@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Add.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="GlobalConsts.h" />
     <ClInclude Include="NameSpaceHeaders.h" />
   </ItemGroup>
