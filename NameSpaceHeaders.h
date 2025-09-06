@@ -16,4 +16,8 @@ namespace Addition
 	int doSomething(int x, int y);
 }
 
+void incrementAndPrint();
+
+int generateID();
+
 #endif

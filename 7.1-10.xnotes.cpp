@@ -42,6 +42,25 @@ void foo() {}
 
 int main()
 {
+
+
+#if 0
+    //STATIC LOCAL VARIABLE NOTES:
+    //When applied to global variables, the static keyword causes internal linkage, meaning it cannot be exported
+    // to other files.
+    // When applied to a local variable(as shown below) the keyword declares the variable to have static duration,
+    // which means the variable is created once and won't be destroyed until the program ends.
+    //incrementAndPrint contained in NameSpaceHeaders
+    // --- shows that static variables created in a local scope are created and destroyed at start/end of program
+    //Outputs 2 3 4
+    incrementAndPrint();
+    incrementAndPrint();
+    incrementAndPrint();
+    //Outputs 0 1 2
+    std::cout << generateID() << '\n';
+    std::cout << generateID() << '\n';
+    std::cout << generateID() << '\n';
+#endif
 #if 0
     //Inline Global Constants:
     //This uses inline global constants from the GlobalConsts header file. Using inline constexpr variables in
