@@ -6,6 +6,8 @@
 #include "NameSpaceHeaders.h"
 #include"GlobalConsts.h"
 #include "Constants.h"
+
+
 #if 0
 //INLINE AND UNNAMED NAMESPACE CODE:
 //Using inline namespaces allows for a form of versioning. Allows easier changes to namespace functions.
@@ -16,6 +18,7 @@ inline namespace V1
         std::cout << "V1\n";
     }
 }
+
 namespace V2
 {
     void doSomething()
@@ -23,6 +26,7 @@ namespace V2
         std::cout << "V2\n";
     }
 }
+
 //Unnamed namespaces cause internal linkage for all functions/vars contained within.
 //Essentially everything that is in the unnamed namespace is static.
 namespace
@@ -39,6 +43,7 @@ static void doSomething()
     std::cout << "V!\n"
 }
 #endif
+
 //GLOBAL VAR CODE:
 //THIS CODE IS DEAD AS A RESULT OF INLINE GLOBAL CONSTANTS FROM THE GlobalConsts.h file.
 //global variable, with global scope. Try to declare global vars in a namespace.
@@ -51,6 +56,7 @@ namespace GlobalVars
     double g_pi = 3.14;
 }
 #endif
+
 //INTERNAL LINKAGE NOTES:
 #if 0
 //Internal linkage is useful to ensure that certain variables or functions aren't accessed by other files.
@@ -73,6 +79,7 @@ extern const int g_y = 1;
 //that you wish to use the function in.
 void foo() {}
 #endif
+
 #if 0
 //Used in 7.x Q3
 int accumulate(int x) 
@@ -80,11 +87,51 @@ int accumulate(int x)
     static int total = 0;
     total += x;
     return total;
+}
+#endif
 
+#if 0
+//Function created for 8.6 quiz question
+int calculate(int x, int y, char op)
+{
+    switch (op)
+    {
+    case '+':
+        return x + y;
+    case '-':
+        return x - y;
+    case '*':
+        return x * y;
+    case '/':
+        return x / y;
+    case '%':
+        return x % y;
+    default:
+        std::cout << "Error: Invalid operator.\n";
+        return -1;
+    }
+        
 }
 #endif
 int main()
 {
+
+#if 0
+    //Code used in conjunction with calculate(int, int, char) for 8.6 quiz.
+    int x;
+    int y;
+    char op;
+
+    std::cout << "Please enter an integer: ";
+    std::cin >> x;
+    std::cout << "Enter another integer: ";
+    std::cin >> y;
+    std::cout << "Enter an operator(+, -, *, /, %): ";
+    std::cin >> op;
+    std::cout << "Calulating...\n";
+    std::cout << "Calculated: " << calculate(x, y, op) << '\n';
+#endif
+
 #if 0
     //7.x Q1
     std::cout << "Enter a positive number: ";
@@ -124,6 +171,7 @@ int main()
 
     return 0;
 #endif
+
 #if 0
     //INLINE AND UNNAMED NAMESPACE CODE:
     //Unnamed namespace allows this function to be called without qualifiers.
@@ -132,6 +180,7 @@ int main()
     //Calls the inline namespace(V1):
     doSomething();
 #endif
+
 #if 0
     //STATIC LOCAL VARIABLE NOTES:
     //When applied to global variables, the static keyword causes internal linkage, meaning it cannot be exported
@@ -149,6 +198,7 @@ int main()
     std::cout << generateID() << '\n';
     std::cout << generateID() << '\n';
 #endif
+
 #if 0
     //Inline Global Constants:
     //This uses inline global constants from the GlobalConsts header file. Using inline constexpr variables in
@@ -159,6 +209,7 @@ int main()
 
     std::cout << "The area is: " << GlobalConsts::pi * radius * radius;
 #endif
+
     //GLOBAL VARIABLES NOTES:
 #if 0
     //Calling global variabl from within a namespace.
@@ -166,6 +217,7 @@ int main()
     //Calling a global variable from outside a namespace.
     //std::cout << g_pi;
 #endif
+
     //LOCAL VARIABLES QUIZ QUESTION
 #if 0
     int smaller;
@@ -191,6 +243,7 @@ int main()
     std::cout << "The smaller value is: " << smaller << '\n';
     std::cout << "The larger value is: " << larger << '\n';
 #endif
+
     //NAMESPACE NOTES:
 #if 0
     std::cout << Addition::doSomething(5, 5) << '\n';
@@ -204,6 +257,7 @@ int main()
     //NOTE: Cannot call functions from outside scope of smallest scope namespace. Can't call doSomething here.
     //std::cout << AllSub::doSomething(1, 1) << '\n';
 #endif
+
 //LOCAL VARIABLES + Variable Shadowing NOTES:
 #if 0
     //Very interesting difference between Java and C++. You can instantiate a new x, set it to a new value,
@@ -223,5 +277,6 @@ int main()
     //Prints 0
     std::cout << x << '\n';
 #endif
+
     return 0;
 }
