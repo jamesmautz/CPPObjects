@@ -115,6 +115,18 @@ int calculate(int x, int y, char op)
 #endif
 int main()
 {
+    //GOTO NOTES:
+    int x;
+NotNegative:
+    std::cout << "Enter a negative integer: \n";
+    std::cin >> x;
+
+    if (x > 0)
+    {
+        goto NotNegative;
+    }
+
+    std::cout << "Thanks, you entered: " << x << '\n';
 
 #if 0
     //Code used in conjunction with calculate(int, int, char) for 8.6 quiz.
