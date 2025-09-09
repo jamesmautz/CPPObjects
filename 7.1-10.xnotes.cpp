@@ -115,6 +115,41 @@ int calculate(int x, int y, char op)
 #endif
 int main()
 {
+    //LOOPS QUIZ STUFF:
+#if 0
+    //8.8 Q2
+    char loopChar = 'a';
+    while (loopChar <= 'z')
+    {
+        std::cout << loopChar << " " << static_cast<int>(loopChar) << '\n';
+        ++loopChar;
+
+    }
+#endif
+#if 0
+    //8.8 Q3
+    int counter = 1;
+    while (counter <= 5)
+    {
+        int innerCount = 5;
+        while (innerCount >= 1)
+        {
+            if (innerCount <= counter)
+            {
+                std::cout << innerCount << " ";
+            }
+            else
+            {
+                std::cout << "  ";
+            }
+            --innerCount;
+        }
+
+        std::cout << '\n';
+        ++counter;
+    }
+#endif
+#if 0
     //GOTO NOTES:
     int x;
 NotNegative:
@@ -127,6 +162,7 @@ NotNegative:
     }
 
     std::cout << "Thanks, you entered: " << x << '\n';
+#endif
 
 #if 0
     //Code used in conjunction with calculate(int, int, char) for 8.6 quiz.
