@@ -6,6 +6,9 @@
 #include "NameSpaceHeaders.h"
 #include"GlobalConsts.h"
 #include "Constants.h"
+#include "Random.h"
+#include <cassert>;
+#include <cmath>
 
 
 #if 0
@@ -174,8 +177,155 @@ void fizzbuzzpop(int x)
     }
 }
 
+//8.x QUIZ FUNCTIONS:
+//8.x Q1 Functions:
+double getHeight()
+{
+    std::cout << "Enter the height of the tower in meters: ";
+    double towerHeight{};
+    std::cin >> towerHeight;
+    return towerHeight;
+}
+double calculateBallHeight(double towerHeight, int seconds)
+{
+    // Using formula: s = (u * t) + (a * t^2) / 2
+    // here u (initial velocity) = 0, so (u * t) = 0
+    const double fallDistance{ GlobalConsts::gravity * (seconds * seconds) / 2.0 };
+    const double ballHeight{ towerHeight - fallDistance };
+
+    // If the ball would be under the ground, place it on the ground
+    if (ballHeight < 0.0)
+        return 0.0;
+
+    return ballHeight;
+}
+void printBallHeight(double ballHeight, int seconds)
+{
+    if (ballHeight > 0.0)
+        std::cout << "At " << seconds << " seconds, the ball is at height: " << ballHeight << " meters\n";
+    else
+        std::cout << "At " << seconds << " seconds, the ball is on the ground.\n";
+}
+double calculateAndPrintBallHeight(double towerHeight, int seconds)
+{
+    const double ballHeight{ calculateBallHeight(towerHeight, seconds) };
+    printBallHeight(ballHeight, seconds);
+    return ballHeight;
+}
+
+//8.x Q2 Functions:
+bool isPrime(int x) 
+{
+    if (x <= 1)
+    {
+        return false;
+    }
+    if (x == 2)
+    {
+        return true;
+    }
+    if (x % 2 == 0)
+    {
+        return false;
+    }
+    for (int i = 3; i*i <= x; i += 2)
+    {
+
+        if (x % i == 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+//8.x Q3 Functions:
+void hilo(int low, int high, int guesses) 
+{
+    while (true) {
+        std::cout << "Let's play a game. I'm thinking of a number between " << low << " and " << high << ".You have " << guesses <<" tries to guess what it is.\n";
+        unsigned int x = Random::get(low, high);
+        for (int i = 1; i <= guesses; ++i)
+        {
+            std::cout << "Guess #" << i << ": ";
+            unsigned int input;
+            std::cin >> input;
+            if (input < x)
+            {
+                std::cout << "Your guess is too low.\n";
+            }
+            else if (input == x) {
+                std::cout << "Correct! You win!\n";
+                break;
+            }
+            else
+            {
+                std::cout << "Your guess is too high.\n";
+            }
+            if (i == guesses && input != x) {
+                std::cout << "Sorry, you lose. The correct number was " << x << ".\n";
+            }
+        }
+    NewPlay:
+        char charInput;
+        std::cout << "Would you like to play again (y/n)? ";
+        std::cin >> charInput;
+        if (charInput == 'n')
+            break;
+        else if(charInput != 'n' && charInput != 'y')
+        {
+            goto NewPlay;
+        }
+    }
+    
+    std::cout << "Thank you for playing.";
+}
+
 int main()
 {
+#if 0
+    //8.x Q1
+    const double height = getHeight();
+    int seconds = 0;
+    while (calculateAndPrintBallHeight(height, seconds) > 0.0) 
+    {
+        ++seconds;
+    }
+#endif
+
+#if 0
+    //8.x Q2
+    assert(!isPrime(0)); // terminate program if isPrime(0) is true
+    assert(!isPrime(1));
+    assert(isPrime(2));  // terminate program if isPrime(2) is false
+    assert(isPrime(3));
+    assert(!isPrime(4));
+    assert(isPrime(5));
+    assert(isPrime(7));
+    assert(!isPrime(9));
+    assert(isPrime(11));
+    assert(isPrime(13));
+    assert(!isPrime(15));
+    assert(!isPrime(16));
+    assert(isPrime(17));
+    assert(isPrime(19));
+    assert(isPrime(97));
+    assert(!isPrime(99));
+    assert(isPrime(13417));
+
+    std::cout << "Success!\n";
+#endif
+    //8.x Q3
+    int low;
+    int high;
+    int guesses;
+    std::cout << "Pick a lower bound for a guessing game: ";
+    std::cin >> low;
+    std::cout << "Pick a higher bound for a guessing game:  ";
+    std::cin >> high;
+    std::cout << "Pick the number of guesses you get:  ";
+    std::cin >> guesses;
+    hilo(low, high, guesses);
     //FOR LOOPS QUIZ STUFF:
 #if 0
     //8.10 Q1
@@ -194,9 +344,10 @@ int main()
     //8.10 Q4
     fizzbuzz(15);
 #endif
+#if 0
     //8.10 Q5
     fizzbuzzpop(150);
-
+#endif
 
     //WHILE LOOPS QUIZ STUFF:
 #if 0

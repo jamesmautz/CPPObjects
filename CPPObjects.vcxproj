@@ -148,6 +148,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="GlobalConsts.h" />
     <ClInclude Include="NameSpaceHeaders.h" />
+    <ClInclude Include="Random.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
