@@ -113,9 +113,92 @@ int calculate(int x, int y, char op)
         
 }
 #endif
+
+//Used for 8.10 Q2
+int sumTo(int x)
+{
+    int sum = 0;
+    for (int i = 1; i <= x; ++i)
+    {
+        sum += i;
+    }
+    return sum;
+}
+
+//Used for 8.10 Q4
+void fizzbuzz(int x)
+{
+    for (int i = 1; i <= x; ++i)
+    {
+        if (i % 5 == 0 && i % 3 == 0)
+        {
+            std::cout << "fizzbuzz\n";
+        }
+        else if (i % 3 == 0) 
+        {
+            std::cout << "fizz\n";
+        }
+        else if (i % 5 == 0)
+        {
+            std::cout << "buzz\n";
+        }
+        else
+        {
+            std::cout << i << '\n';
+        }
+    }
+}
+//Used for 8.10 Q5
+void fizzbuzzpop(int x)
+{
+    for (int i = 1; i <= x; ++i)
+    {
+        
+        if (i % 3 == 0)
+        {
+            std::cout << "fizz";
+        }
+        if (i % 5 == 0)
+        {
+            std::cout << "buzz";
+        }
+        if (i % 7 == 0)
+        {
+            std::cout << "pop";
+        }
+        if(i % 3 != 0 && i % 5 != 0 && i % 7 != 0)
+        {
+            std::cout << i;
+        }
+        std::cout << '\n';
+    }
+}
+
 int main()
 {
-    //LOOPS QUIZ STUFF:
+    //FOR LOOPS QUIZ STUFF:
+#if 0
+    //8.10 Q1
+    for (int i = 0; i <= 20; ++i)
+    {
+        std::cout << i << ' ';
+    }
+#endif
+
+#if 0
+    //8.10 Q2 - uses sumTo() function.
+    std::cout << sumTo(5);
+#endif
+
+#if 0
+    //8.10 Q4
+    fizzbuzz(15);
+#endif
+    //8.10 Q5
+    fizzbuzzpop(150);
+
+
+    //WHILE LOOPS QUIZ STUFF:
 #if 0
     //8.8 Q2
     char loopChar = 'a';
@@ -126,6 +209,7 @@ int main()
 
     }
 #endif
+
 #if 0
     //8.8 Q3
     int counter = 1;
@@ -149,6 +233,7 @@ int main()
         ++counter;
     }
 #endif
+
 #if 0
     //GOTO NOTES:
     int x;
