@@ -443,7 +443,7 @@ void numericConversionNotes()
 //int x = 1; has some redundancy. The literal 1 and type int used to initialize x both tell x to be type int.
 //When we want the initializer and variable to have the same type, we are providint the same info twice.
 //We can solve this redundancy with the "auto" keyword. auto x = 1;
-
+#if 0
 int main()
 {
     printInt(2);//Uses an int parameter, no promotion needed - Outputs: 2
@@ -736,3 +736,4 @@ NotNegative:
 
     return 0;
 }
+#endif
