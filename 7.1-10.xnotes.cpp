@@ -9,6 +9,7 @@
 #include "Random.h"
 #include <cassert>;
 #include <cmath>
+#include <limits>
 
 
 #if 0
@@ -238,7 +239,7 @@ bool isPrime(int x)
     }
     return true;
 }
-
+#if 0
 //8.x Q3 Functions:
 void hilo(int low, int high, int guesses) 
 {
@@ -280,6 +281,101 @@ void hilo(int low, int high, int guesses)
     
     std::cout << "Thank you for playing.";
 }
+#endif
+//9.x Q1 Functions:
+//This function ignores invalid information in user inputs.
+void ignoreLine()
+{
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+int getUserInt(int low, int high)
+{
+    while (true)
+    {
+        int input;
+        std::cin >> input;
+
+        if (!std::cin)
+        {
+            std::cin.clear();
+            ignoreLine();
+            std::cout << "Please enter a valid guess: ";
+            continue;
+        }
+
+        if (input < low || input > high)
+        {
+            std::cin.clear();
+            ignoreLine();
+            std::cout << "Please guess again with a number that is in bounds: ";
+            continue;
+        }
+
+        //If extraction succeeds:
+        ignoreLine();
+        return input;
+    }
+}
+
+//This is a modified version of hilo() with error handling.
+void hilo(int low, int high, int guesses)
+{
+    while (true) {
+        std::cout << "Let's play a game. I'm thinking of a number between " << low << " and " << high << ".You have " << guesses << " tries to guess what it is.\n";
+        unsigned int x = Random::get(low, high);
+        for (int i = 1; i <= guesses; ++i)
+        {
+            std::cout << "Guess #" << i << ": ";
+            int input = getUserInt(low, high);
+            if (input < x)
+            {
+                std::cout << "Your guess is too low.\n";
+            }
+            else if (input == x) {
+                std::cout << "Correct! You win!\n";
+                break;
+            }
+            else
+            {
+                std::cout << "Your guess is too high.\n";
+            }
+            if (i == guesses && input != x) {
+                std::cout << "Sorry, you lose. The correct number was " << x << ".\n";
+            }
+        }
+    NewPlay:
+        char charInput;
+        std::cout << "Would you like to play again (y/n)? ";
+        std::cin >> charInput;
+        if (charInput == 'n')
+            break;
+        else if (charInput != 'n' && charInput != 'y')
+        {
+            goto NewPlay;
+        }
+    }
+
+    std::cout << "Thank you for playing.";
+}
+
+void hiloStart()
+{
+    int low;
+    int high;
+    int guesses;
+    std::cout << "Pick a lower bound for a guessing game: ";
+    std::cin >> low;
+    ignoreLine();
+    std::cout << "Pick a higher bound for a guessing game:  ";
+    std::cin >> high;
+    ignoreLine();
+    std::cout << "Pick the number of guesses you get:  ";
+    std::cin >> guesses;
+    ignoreLine();
+    hilo(low, high, guesses);
+}
+
 
 int main()
 {
@@ -315,17 +411,10 @@ int main()
 
     std::cout << "Success!\n";
 #endif
-    //8.x Q3
-    int low;
-    int high;
-    int guesses;
-    std::cout << "Pick a lower bound for a guessing game: ";
-    std::cin >> low;
-    std::cout << "Pick a higher bound for a guessing game:  ";
-    std::cin >> high;
-    std::cout << "Pick the number of guesses you get:  ";
-    std::cin >> guesses;
-    hilo(low, high, guesses);
+#if 1
+    //8.x Q3 & 9.x Q1
+    hiloStart();
+#endif
     //FOR LOOPS QUIZ STUFF:
 #if 0
     //8.10 Q1
