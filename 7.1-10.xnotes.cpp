@@ -10,6 +10,9 @@
 #include <cassert>;
 #include <cmath>
 #include <limits>
+#include <typeinfo>
+#include<string>
+#include<string_view>
 
 
 #if 0
@@ -376,9 +379,92 @@ void hiloStart()
     hilo(low, high, guesses);
 }
 
+//10.2 - Numeric Promotion
+void printInt(int x)
+{
+    std::cout << x << '\n';
+}
+
+//10.3 - Numeric conversion
+void numericConversionNotes()
+{
+    //5 types of numeric conversions.
+    //1. Converting an integral type to any other integral type:
+    short s = 3;//convert int to short
+    long l = 3;//convert int to long
+    char ch = s;//convert short to char
+    unsigned int u = 3;//convert int to unsigned int
+    //2. Converting a floating point type to any other floating point type:
+    float f = 3.0;//convert double to float - can cause data loss with longer doubles.
+    long double ld = 3.0;//convert double to long double
+    //3. Converting a floating point type to an integral typpe
+    int i = 3.5;//convert double to int, i = 3 - unsafe conversion, results in data loss(the .5)
+    //4. Converting an integral type to any fp type
+    double d = 3;//convert int to double
+    //5. Convert integral type or a floating point type to a bool.
+    bool b1 = 3;//convert int to bool - b1 = true
+    bool b2 = 3.0;//convert int to bool - b2 = true
+}
+//10.4 - Narrowing Conversions, list initialization, and constexpr initializers
+//Narrowing Conversions occur when the destination type may not be able to hold all the values of the source type:
+//1. Floating point type to integral type.
+//2. Floating point type to a narrower fp type(unless type being converted is constexpr and in range of destination)
+//3. From an integral to a floating point type, unless value is constexpr and value can be stored exactly in destination type.
+//4. From integral type to integral type which can't represent all values of original type.
+//Generally avoid narrowing conversions. Make intentional narrowing conversions explicit(with static_cast<>
+
+//10.5 Arithmetic conversions
+//type conversions occuring as a result of arithmetic operations.
+//??? x = 2 + 3.5; -- is x a double or an int(it will be a double)
+//??? x = 4s + 5s; -- x is a double(unless declared as a short)
+//??? x = 5u - 10; -- x is an unsigned int(might expect int, but 5u is unsigned, so loops back around to huge int)
+
+//10.6 Explicit type conversion and static_cast
+//c++ supports 5 types of casting: static_cast, dynamic_cast, const_cast, reinterpret_cast, C-style casts
+//static_cast and dynamic_cast are safe, const cast is only safe for adding const.
+//C-style casts - (double)x -- like java type-casting
+//C-style casts are unsafe, it could be performing various different types of casts without us knowing.
+//      A C-style cast doesn't make it clear which specific type of cast is being used.
+//C-style casts try to perform the following casts in order:
+//          const_cast, static_cast, static_cast then const_cast, reinterpret_cast, reinterpret cast then const_cast
+//static_cast is by far the most used cast
+
+//10.7 Typedefs and type aliases
+//Type aliases: Replaces specific types within code with the "using" keyword and a name for the alias:
+//              using Distance = double; -- now we can declare something like this: Distance x = 3.5;
+//                                          x will be of type "double"
+//  Name type aliases with a Capital letter and don't use a suffix unless there's a good reason to do so.
+//  Aliases don't actually define a new type, it's just a different identifier for an existing type.
+//  Aliases have block scope, if defined in a block, it's only usable there. If you need more scope use a header.
+//Typedefs: An older way of creating type aliases. typedef long Miles; == using Miles = long;
+//          Still in C++ for backwards compatibility, but essentially replaced with type aliases.
+
+//10.8 Type deduction for objects using the auto keyword
+//int x = 1; has some redundancy. The literal 1 and type int used to initialize x both tell x to be type int.
+//When we want the initializer and variable to have the same type, we are providint the same info twice.
+//We can solve this redundancy with the "auto" keyword. auto x = 1;
 
 int main()
 {
+    printInt(2);//Uses an int parameter, no promotion needed - Outputs: 2
+
+    short s = 3;
+    printInt(s);//Numeric promotion of short to int - Outputs: 3
+
+    printInt('a');//Numeric promotion of char to int - Outputs: 97 - ASCII of 'a'
+    printInt(true);//Numeric promotion of bool to int - Outputs: 1 - int value of bool, if false: 0
+    
+    auto x = 1;
+    auto d = 1.0;
+    std::cout << typeid(x).name() << '\n';
+    std::cout << typeid(d).name() << '\n';
+
+
+#if 0
+    //8.x Q3 & 9.x Q1
+    hiloStart();
+#endif
+
 #if 0
     //8.x Q1
     const double height = getHeight();
@@ -411,10 +497,7 @@ int main()
 
     std::cout << "Success!\n";
 #endif
-#if 1
-    //8.x Q3 & 9.x Q1
-    hiloStart();
-#endif
+
     //FOR LOOPS QUIZ STUFF:
 #if 0
     //8.10 Q1
