@@ -1,5 +1,6 @@
 #include <iostream>
 #include "add.h"
+#include "GlobalConsts.h"
 
 //11.1 Intro to function overloading
 //You can overload funcitons of the same name by having different parameters.
@@ -134,8 +135,46 @@ auto sub(T x, U y)
 {
 	return x - y;
 }
+
+//F.1 Constexpr functions
+//constexpr can be used in functions as well in order to produce output which can be entered in a constexpr variable.
+//to do so you just put the keyword constexpr in front of the return type:
+constexpr double circumference(double radius)
+{
+	return 2 * GlobalConsts::pi * radius;
+}
+//Constexpr functions can be evaluated at compile time. Using the above function in a call like so:
+//	constexpr double circ = circumference(3); is compiled like this: constexpr double circ = circumference(18.8496);
+//In order to evaluate at compile time the following must be true: 
+// The call to the constexpr function must have arguments which are known at compile time(constexpr or const).
+// All statements and expressions with the constexpr function must be evaluatable at compile time.
+//constexpr functions don't have to be evaluated at compile time.
+//we can call the above function like so: double circ = circumference(3); without needing to make it a constexpr as well.
+
+//F.2 Constexpr functions 2
+//Constexpr functions that can be evaluated at compile time don't always do so. It's up to the compiler. 
+//	This is especially true when called a non-constexpr variable.(double x = circumference(3); may not evaluate at compile)
+//Compilers may not check if our function is actually evaluatable at compile time.(easy to make it runtime compatible but not compile)
+//constexpr functions can't have constexpr parameters.
+//	If this were to happen, the constexpr function wouldn't be usable in non-constexpr compatible circumstances.
+//constexpr functions are implicitly inline. This makes them exempt from the ODR rule.
+//	A constexpr function used in multiple files should be defined in header files and #included in their needed .cpp files.
+//We can determine the likelihood that a function will evaluate at compile time as follows:
+//Always: constexpr function called where constexpr is required OR constexpr function is called from other compile-time function.
+//Probably: constexpr function is called where constexpr isn't required. All arguments are constants.
+//Possibly: constexpr function is called where constant expression isn't required. OR non-constexpr function with all constant params.
+//Never: constexpr funciton is called where const expression isn't required, some arguments have values that aren't known at compile.
+//		"Never" is impossible, it would cause compile error.
+
+
+//F.3 Constexpr functions 3 and consteval
+//
+
 int main()
 {
+	constexpr double circ = circumference(3);
+	std::cout << "Circumference: " << circ << '\n';
+
 #if 0
 	//11.6 function calls:
 	std::cout << max<int>(1, 2) << '\n';
