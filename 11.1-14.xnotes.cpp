@@ -1,6 +1,7 @@
 #include <iostream>
 #include "add.h"
 #include "GlobalConsts.h"
+#include <type_traits> //for std::is_constant_evaluated
 
 //11.1 Intro to function overloading
 //You can overload funcitons of the same name by having different parameters.
@@ -168,12 +169,65 @@ constexpr double circumference(double radius)
 
 
 //F.3 Constexpr functions 3 and consteval
-//
+//There isn't a way to tell the compiler to that a constexpr function to always run at compile.
+//However, we can force it to by ensuring the return value is used where a constexpr is required.
+//		Most commonly, this is done by passing the return to a constexpr variable.(In C++ 20 there is a better solution)
+//You can add consteval in c++ 20 to make a function an immediate function.
+//	Immediate functions are required to evaluate at compile time, otherwise a compile error will result.
+consteval int lesser(int x, int y)
+{
+	return (x < y ? x : y);
+}
+//Try to use consteval if there is a fucntion that must evaluate at compile time for some reason.
+//consteval functions can't evaluate at runtime.
+
+//F.4 Constexpr fucntions 4
+//We can change local variables that aren't constexpr in constexpr or consteval functions.
+consteval int doSomething1(int x, int y)
+{
+	x += 2;
+
+	int z = x + y;
+	if (x > y)
+		z -= 1;
+	return z;
+}
+//constexpr functions can call non-constexpr functions only in a non-constant context.
+constexpr int someFunction()
+{
+	if (std::is_constant_evaluated())
+		return doSomething1(5, 6);
+	else
+		return 0;
+}
+//Essentially, they allow non-constexpr to be called in constexpr functions to allow for if/else statements similar to above.
+//If a function can be evaluated as part of a required constexpr, it should be made constexpr.
+//Pure function: Function always returns the same results when given the same arguments. && The function has no side effects.
+//								(Meaning it doesn't change static local vars or global vars, doesn't do input/output, etc...)
+
+
+//12.1
 
 int main()
 {
+	constexpr int g = doSomething1(5, 6);
+	std::cout << g << '\n';
+
+#if 0
+	constexpr int g = lesser(6, 7);
+	std::cout << g << '\n';
+	
+	std::cout << lesser(4, 6) << " is lessser.\n";
+
+	//These lines will cause an error. when lesser() is called, it can't be evaluated at compile time.
+	//int x = 5; This isn't a constexpr, not evaluatable at compile.
+	//std::cout << lesser(x, 6) << " is lesser. \n";
+#endif
+
+#if 0
 	constexpr double circ = circumference(3);
 	std::cout << "Circumference: " << circ << '\n';
+#endif
 
 #if 0
 	//11.6 function calls:
