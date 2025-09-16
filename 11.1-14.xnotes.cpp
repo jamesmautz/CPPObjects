@@ -206,7 +206,52 @@ constexpr int someFunction()
 //								(Meaning it doesn't change static local vars or global vars, doesn't do input/output, etc...)
 
 
-//12.1
+//12.1 Intro to compound data types
+//Up to this point we have been using basic fundamental data types. But these start to break apart for more specific cases.
+//For ex. How would we want to represent fractions in complex code? What if you wanted to generate studentIDS - you'd need to instantiate tons of ID variables.
+//We have already been using compound types in functions --- void doSomething(int x, double y) is compound.
+
+//12.2 Value categories(lvalues and rvalues)
+//The type of an expression is equivalent to the type of the value which results from an evaluated expression:
+//auto v1 = 12/4; -- int/int = int(v1 is type int) auto v2 = 12.0/4; --double/int=double(v2 is type double)
+//Value category: indicates whether an expression resolves to a value, a funciton, or an object of some kind.
+//lvalue: an espression that evaluates to an identifiable object or function. It has an "identity:
+//int y = x; --- x being used for y makes x an lvalue expression.
+//Entities with identities can be accessed via an identifier, referene, or pointer - typically longer lifetime than single expression/statement.
+//Two types of lvalues:
+//Modifiable lvalue: an lvalue whose value can be modified. int y = x;
+//non-modifiable lvalue: an lvalue whose value can't be modified. const double e = 4;
+//rvalue: an expression which isn't an lvalue. Rvalue expressions evaluate to a value. int x = 5; is an rvalue.
+//	int z = return5(); -- return5() is an rvalue expression(returns temp variable). int q = static_cast<int>(d);--rvalue
+//Unless specified, operators expect operands to be rvalues, operator+ expects rvalues.
+//		This is why we can't do 5 = x, operator= expects an rvalues operand, x is an lvalue.
+//		But, if that's not allowed, why can we do: x = y;
+//		In this case, y undergoes an lvalue-to-rvalue conversion so that it can be used. 
+//				Essentially, y is evaluated to produce it's value. Y's value is an rvalue.
+
+//12.3 Lvalue references
+//Reference: an alias for an existing object. We can use references to modify/read the object being referenced.
+//An lvalue reference acts as a reference for an existing lvalue. They type of reference determine what type of object it can ref
+//lvalue references defined by &: int&, double&, const int& --- all examples of lvalue references.
+//int& is the type of lvalue reference you would use to reference an int. same for double&.
+//We can create an lvalue reference variable like so: int& ref = x;(where x is some defined int)
+//	When making an lvalue reference you can attach the ampersand to the type or the variable name:
+//		int& ref == int &ref --- it doesn't matter which I choose, generally the standard is next to type.
+//When you modify the value of a ref, the variable referenced is modified and vice versa.
+//All references must be initialized. int& ref; will cause an error.
+//You can't bind an lvalue reference to an rvalue: int& ref = 5; is invalid
+//You can't bind a non-const lvalue reference to a const referent.
+//You can't bind references to non-matching types(can't do a numeric promotion typecast)
+//You also cannot change the referent of a reference. Once a reference is bound, it can't be reassigned.
+//		int x = 5; int y = 6; int& ref = x; ref = y; ---- This will compile, but changes ref and x to the value of y.
+//References and referents have independent scopes/lifetimes. A reference can be destroyed before or after a referent.
+//	Destroying a referent before a reference causes the reference to "dangle", calling a dangling reference -> undefined behavior.
+//References aren't objects. When the compiler can it will try to replace the reference with the referent.
+//			This helps to save space, however this replacement isn't always possible and the reference may be stored.
+//	This also means that you can't have a reference to a reference. int& ref2 = ref; won't work.
+
+//12.4 Lvalue references to const
+//
 
 int main()
 {
