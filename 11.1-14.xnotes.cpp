@@ -2,6 +2,7 @@
 #include "add.h"
 #include "GlobalConsts.h"
 #include <type_traits> //for std::is_constant_evaluated
+#include <string>
 
 //11.1 Intro to function overloading
 //You can overload funcitons of the same name by having different parameters.
@@ -251,12 +252,87 @@ constexpr int someFunction()
 //	This also means that you can't have a reference to a reference. int& ref2 = ref; won't work.
 
 //12.4 Lvalue references to const
-//
+//const references can bind to rvalues: const int& ref = 5; --- this is allowed even though the non const isn't allowed.
+//You can also call a const reference on a non-const variable. int x = 5; const int& ref = x; --- allowed.
+//															  When using ref, it will treat x as a const.
+//You can bind const refs to non-matchning rvalues: const int& ref = c; -- this is allowed, ref = 97 in this case.
+//When a const reference is made to an rvalue, the temporary rvalue's scope is extended to match the reference.
+//references can also be constexpr, but they must be bound to static objects(globals or static locals)
+//constexpr references must also be const: constexpr const int& ref = s_x;
+
+//12.5 Pass by lvalue reference
+//Pass by value(passing a variable into a parameter) can be expensive for some types(std::string).
+//		Each time you pass by value you have to make a copy of the variable.
+//		Copying these values only to destroy them quickly is very wasteful/inefficient.
+//References can be used to avoid this. We can instead "pass by reference."
+void printVal(std::string& x) //This is a pass by reference function now. You can put a normal std::string in parameter
+{							  //		but now it will be a reference.
+	std::cout << x << '\n';
+}
+//Using the above function to print a value means that no copy is made, instead a reference is bound.
+//Binding a reference is always inexpensive, and is cheaper/faster than making a copy.
+//This also means that when passing by reference, you can change the value of the original variable which was parameterized.
+void addOne(int& x)
+{
+	++x;
+}
+void makeSeventy(int& x)
+{
+	x = 70;
+}
+//You can only pass by reference with modifiable lvalue arguments. A const lvalue can't be passed. An rvalue can't be passed.
+//addOne(5) will cause an error.(5 is an rvalue)
+
+//12.6 Pass by const lvalue reference
+//You can also pass a const reference as part of a function:
+void printRef(const int& ref)
+{
+	std::cout << ref << '\n';
+}
+//This allows us to pass any variable(const or not const) in this parameter while making the original non-modifiable.
+//Since the paramter is a const ref, you can also do type conversion. But this should be avoided because no copy will be made.
+//You can make functions that use both pass by value and reference:
+//void foo(int a, int& b, const std::string& c); --- is completely okay.
+//When to pass by reference vs. value:
+//Generally, fundamental and enumerated types can/should be passed by value because the are cheap to copy.
+//Class types can be very expensive so they are usually passed by const reference.
+
+//12.7 Introduction to pointers
 
 int main()
 {
+
+
+//12.6
+#if 0
+	int x = 5;
+	printRef(x);
+
+	const int y = 8;
+	printRef(y);//Printref is a const reference, so you can pass a const value.
+
+	printRef(5);//Even though this is a reference function, because it is constant you can pass an rvalue.
+#endif
+
+//12.5
+#if 0
+	int x = 2;
+	std::cout << "Value before addOne(): " << x << '\n';
+	addOne(x);
+	std::cout << "Value after addOne(): " << x << '\n';
+	makeSeventy(x);
+	std::cout << "Value after makeSeventy(): " << x << '\n';
+
+	std::string str = "Hello.";
+
+	printVal(str);
+#endif
+
+//F.4
+#if 0
 	constexpr int g = doSomething1(5, 6);
 	std::cout << g << '\n';
+#endif
 
 #if 0
 	constexpr int g = lesser(6, 7);
