@@ -298,10 +298,63 @@ void printRef(const int& ref)
 //Class types can be very expensive so they are usually passed by const reference.
 
 //12.7 Introduction to pointers
+//&: The address of operator. Place & before a variable and you can get it's address.
+void printAddress(int& x)
+{
+	std::cout << &x << '\n'; //& makes the output become the address of x, not the value of x.
+	std::cout << *&x << '\n'; //Dereference operator * returns the value held at an address. --- 5 in this case.
+}
+//Pointer: an object that holds a memory address as its value. Allows us to store the address of an object for later use.
+//Pointer type: A type that specifies a pointer --- int*, double*, std::string*
+//	NOTE: The asterisk used for a pointer is not a dereference operator, it's just part of the pointer syntax.
+//The type of pointer has to match the type of data: int --- int*, double --- double*, etc.
+//Pointers can't be initailzed with a literal(1 exception covered in 12.8).
+//When assigning a pointer we can do so in 2 ways.
+//	1. To change what the pointer is pointing at: int* ptr = &x; ptr = &y; --- here we changed what is being pointed to twice.
+//	2. To change the value being pointed at: int* ptr = &x; *ptr = 8; --- using *ptr we dereference and change the value of x.
+//Pointers and references behave pretty similarly. Both allow for abstracted modificiation/viewing of objects.
+//Differences: Refs must be initialized, pointers don't need to be(they should, though). References aren't objects, pointers are
+//			   Refs can't be reseated(can't be changed to reference another thing), pointers can change what they point at
+//			   Refs must always be bound to an object, pointers can be null. Refs are "safe" pointers are dangerous.
+
+//12.8 Null pointers
+//Besides an address, pointers can also hold a null value. These pointers are pointing to nothing and called "null pointers"
+//int* ptr{}; --- Easiest way to make a null pointer.
+//The nullptr keyword exists so that we can explicitly make a pointer null: int* ptr = nullptr;
+//Dereferencing a null pointer leads to undefined behavior.
+//To avoid dangling pointers, we should try use nullptr.
+//We can use if(ptr){} else{} to check if a pointer is null or not. If it's null it goes to the else statement.
+//In general, we should use references over pointers. Dangling and dereferenced pointers are much more likely than refs.
+
+//12.9 Pointers and const
+//can't use a const pointer on a const variable: const int x = 5; int* ptr = x; ---compile error, can't convert const int*
+//You need to use a pointer to const: const int x = 5; int* ptr = x; --- works okay, can't change the pointer value.
+//We can change what a pointer to const is pointing at. const int* ptr = x; ptr = &y; --- totally allowed
+//We can also have a pointer to const to a non-const variable. However, we still can't change the value being pointed at.
+//We can also have a const pointer which can't have it's address changed: int* const ptr = x; --- place const after int*
+//If you have a const pointer to a non-const variable, you can change it.
+//A const pointer to a const value will have an unchangeable address and value.
+//
 
 int main()
 {
+	int* ptr = nullptr;
+	if (ptr == nullptr)
+		std::cout << "ptr is null.\n";
+	//std::cout << "Address: " << ptr << ". Value: " << *ptr << ".\n";This stops the code. Outputs: Address: 0000000... Value:
+	int x = 5;
+	ptr = &x;//reassign the null pointer to x.
+	std::cout << "Address: " << ptr << ". Value: " << *ptr << ".\n";
 
+#if 0
+	int x = 5;
+	printAddress(x);
+	int* ptr; // an uninitialized pointer
+	int* ptr2{}; // a null pointer
+	int* ptr3 = &x; //A pointer initialized to the address of x.
+	int x2 = *ptr3; //We can then access the value held at ptr3 with the dereference operator.
+	std::cout << x2 << '\n';
+#endif
 
 //12.6
 #if 0
