@@ -477,8 +477,27 @@ void sort2(int& x, int& y)
 		std::swap(x, y);
 	}
 }
+
+//13.1 Intro to program-defined(or user-defined) types
+//User-defined types allow us to create our own types for our own individual uses. This can be very useful for some more niche cases.
+//We can use the struct keyword:
+struct Fraction
+{
+	int numerator{};
+	int denominator{};
+};
+//The struct keyword defines a new program-defined type called Fraction. It can be used anywhere in the rest of the file.
+//	The struct doesn't allocate memory, it just tells the compiler what Fraction is so we can create Fraction objects later.
+//Program defined types must have a semicolon after the last curly bracket.
+//Program-defined types typically have a capitalized name: Fraction not fraction.
+//Program-defined types can be contained in a header file to be used across various files. Structured the same there.
+
+//13.2 Unscoped enumerations
 int main()
 {
+#if 0
+	Fraction f{5, 5}; //Instantiates a fraction object. Must use: {}
+#endif
 #if 0
 	int x = 7;
 	int y = 5;
