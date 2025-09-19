@@ -3,6 +3,7 @@
 #include "GlobalConsts.h"
 #include <type_traits> //for std::is_constant_evaluated
 #include <string>
+#include<cassert>
 
 //11.1 Intro to function overloading
 //You can overload funcitons of the same name by having different parameters.
@@ -334,10 +335,191 @@ void printAddress(int& x)
 //We can also have a const pointer which can't have it's address changed: int* const ptr = x; --- place const after int*
 //If you have a const pointer to a non-const variable, you can change it.
 //A const pointer to a const value will have an unchangeable address and value.
-//
 
+//12.10 Pass by address
+//Up to this point we have covered pass by ref and pass by value. Value requires a copy to be made, and ref passes the actual object.
+//	While these methods are different, both require that an actual object be passed to the parameter.
+//Pass by address provides the address of an object, rather than an object itself.
+void printByAddress(std::string* ptr) //you can make ptr const to be read only like this: const std::string* ptr
+{
+	std::cout << *ptr << '\n';
+	*ptr = "orange";
+	std::cout << *ptr << '\n';
+}
+void printByAddressPointToConst(const std::string* ptr)
+{
+	std::cout << *ptr << '\n';
+	//This code won't compile because ptr is read only cause of const:
+	//*ptr = "orange";
+	//std::cout << *ptr << '\n';
+}
+//This function is a pass by address function: std::string x = "yo"; printByAddress(&x);
+//If you want read only, make function parameter const. (Can't change the value being pointed at then)
+//Within the body of a pass by address function you need to dereference what is being pointed at.
+//Pass by address doesn't make a copy of what is being pointed at.(similar to reference)
+//Similar to pass by reference, pass by address allows you to modify the functions argument.
+//If you want to avoid this you need to make a pointer to const.(const int* ptr NOT THE SAME AS: int* const ptr)
+//When passing by address we should try to ensure it's impossible for the pointer to be null.
+//	Using a conditional like: if(ptr){}else{} is a good way to ensure this behavior.
+//Generally, this may mean that we have to test if the pointer is null multiple times.
+//	Instead, try this: if(!ptr){}...
+//	OR, if the pointer should never be null we can use an assert: assert(ptr)
+void printInt(int* ptr)
+{
+	assert(ptr);
+	std::cout << *ptr << '\n';
+}
+//As a result of passing null things we should prefer pass by (const) since const can handle lvalues and rvalues.
+
+//12.11 Pass By Reference 2
+//One of the more popular reasons to use pass by address is to allow for optional arguments.
+void printIDNum(const int* id=nullptr)
+{
+	if (!id)
+	{
+		std::cout << "You don't have an ID number.\n";
+	}
+	else
+	{
+		std::cout << "Your ID number is: " << *id << ".\n";
+	}
+}
+//Usually function overloading is the better solution to this problem.
+//A function like this doesn't actually change what a pionter is pointing at:
+void nullify(int* ptr)
+{
+	ptr = nullptr;
+}
+//If you run it with a program which checks if the ptr is null, it will say that the pointer is non-null even after nullify()is run
+// This is because you are actually creating a copy of the pointer in this case. You are changing what the copy points to,
+//				then the copy is destroyed after the scope of the function ends.
+//Instead, we have to pass by address by reference: int*&
+void nullify(int*& ptr)
+{
+	ptr = nullptr;
+}
+//Since ptr is a reference to a pointer in this case, no copy is created and you are working with the actual pointer.
+
+//12.12 Return by reference and return by address
+//Similar to pass by value, when returning by value you make a copy of what is being returned.
+//With more expensive types we may look to avoid this by returning a reference.
+//Returning by reference: returns a reference that is bound to the object being returned, which avoids copying the return value.
+//To return by reference, we have to make the return type a reference:
+//std::string& returnRef();
+//When returning by reference we have to ensure that the reference has a scope larger than the function it's used in.
+//	Otherwise, we may end up with a dangling reference and undefined behavior.
+//When returning by reference we should return a static const local variable to avoid this.
+//This can create some issues, though:
+const int& generateSmallID()
+{
+	static int s_x = 0;
+	++s_x;
+	return s_x;
+}
+//The above code is functionally fine. But if called for other references in main multiple of the same ids may be generated.
+//		IE: The same static reference will be referenced by each other reference in main. Instead use a non-ref
+//You can return reference parameters by reference:
+const std::string& firstAlphabetical(const std::string& a, const std::string& b)
+{
+	return (a < b) ? a : b;
+}
+//As shown above, we don't have to make a new reference to a and b to return them. They are already references and can be returned.
+//You can also return by address which functions similarly to return by reference.
+//However, with reference we can return nullptr if there is no object to return. With return by address we have to return something.
+//	Generally, we should try to make sure to return by reference over address.
+
+//12.13 In and Out Parameters
+//In parameters are the default for a function. The caller of some function enters an input value as the parameter(s).
+//			I'm pretty sure all functions I've made up to this point contain only "in parameters."
+//Out parameters exist only as a way to modify the value of an object passed as an argument.
+//	This is done by passing a non-const ref(or pointer to non-const object) and modifying it in the function:
+void getSinCos(double degrees, double& sinOut, double& cosOut)
+{
+	double radians = degrees * GlobalConsts::pi / 180.0;
+	sinOut = std::sin(radians);
+	cosOut = std::cos(radians);
+}
+//This function is a great example of why pass by reference is useful.
+//Return by value would have required separate functions for both sin and cos. Additionally, it would have been less space
+//														efficient, requiring copies to be made/returned of both sin and cos.
+//Out parameters do struggle because the caller must first instantiate and initialize variables and pass them as arguments.
+//		These variables can't be const.
+//Out parameters also can't provide temporary variables which are only used once.
+//You can't call the getSinCos() method in a std::cout call and have it output both sin and cos.
+//Out parameters aren't obviously being changed. getSinCos(degrees, sin, cos) doesn't clearly show that sin/cos will change.
+//Using pass by address can help this because it requires callers to pass an address(&x), but it's still not clear.
+//In-Out Parameters: In some cases the value of a parameter will be used then modified.
+
+//12.14 Type deduction with pointers, references, and cost
+//Using the auto keyword will drop const: const double x = 12.0; auto b = x; --- b is non-const
+//The auto keyword will also drop references. auto ref = getRef(); --- ref isn't a reference type, it's just a normal type.
+//If you want a deduced type to be a reference: auto& ref = getRef(); --- ref is a reference.
+//Top level const: when const applies to the object itself: const int x; int* const ptr; int& const ref;
+//Low level const: when const applies to the object being referenced or pointed to: const int& ref; const int& ptr;
+//Return a const reference drops the reference first, then the const.
+//Type deduction doesn't drop pointers. (just const parts of pointers).
+//	std::string* getPtr(){}	auto ptr = getPtr(); --- ptr is type: std::string*
+//We can also do: auto* to make more clear that the deduced type will be a pointer.
+
+//12.15 std::optional
+//std::optional provides a new way to deal with user error. Use std::optional as a return type:
+//std::optional<int> doIntDivision(int x, int y){} --- in the function body add an if statement to check for fail cases.
+//														in fail cases, return nothing: {};
+
+//12.x
+//2 Reasons to prefer pass by const reference over non-const reference:
+//1. A non-const reference can be used to modify the value of the argument. If this is unneeded, it's better to pass by const.
+//2. A non-const can only accept a modifiable lvalue as an argument. A const can accept modifiable lvalue, non-modifiable lvalue, and rvalue.
+void sort2(int& x, int& y)
+{
+	if (x > y)
+	{
+		std::swap(x, y);
+	}
+}
 int main()
 {
+#if 0
+	int x = 7;
+	int y = 5;
+	std::cout << x << ' ' << y << '\n';
+
+	sort2(x, y);
+	std::cout << x << ' ' << y << '\n';
+	//
+	sort2(x, y);
+	std::cout << x << ' ' << y << '\n';
+#endif
+
+#if 0
+	//12.13
+	double sin = 0;
+	double cos = 0;
+	double degrees;
+	std::cout << "Enter the number of degrees: ";
+	std::cin >> degrees;
+
+	getSinCos(degrees, sin, cos);
+	std::cout << "The sin is: " << sin << ". The cos is: " << cos << ".\n";
+#endif
+#if 0
+	//12.11
+	printIDNum();
+
+	int id = 121212;
+	printIDNum(&id);
+#endif
+
+#if 0
+	//12.10
+	std::string str = "Hello.";
+	printByAddress(&str);
+	int x = 5;
+	printInt(&x);
+#endif
+
+#if 0
+	//12.8
 	int* ptr = nullptr;
 	if (ptr == nullptr)
 		std::cout << "ptr is null.\n";
@@ -345,6 +527,7 @@ int main()
 	int x = 5;
 	ptr = &x;//reassign the null pointer to x.
 	std::cout << "Address: " << ptr << ". Value: " << *ptr << ".\n";
+#endif
 
 #if 0
 	int x = 5;
