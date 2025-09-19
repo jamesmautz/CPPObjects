@@ -4,15 +4,15 @@
 
 #include <iostream>
 #include "NameSpaceHeaders.h"
-#include"GlobalConsts.h"
+#include "GlobalConsts.h"
 #include "Constants.h"
 #include "Random.h"
 #include <cassert>;
 #include <cmath>
 #include <limits>
 #include <typeinfo>
-#include<string>
-#include<string_view>
+#include <string>
+#include <string_view>
 
 
 #if 0

@@ -4,6 +4,7 @@
 #include <type_traits> //for std::is_constant_evaluated
 #include <string>
 #include<cassert>
+#include<optional>
 
 //11.1 Intro to function overloading
 //You can overload funcitons of the same name by having different parameters.
@@ -553,15 +554,63 @@ namespace MonsterType
 //Enumerations will implicitly convert to integral values. std::cout << m; Outputs 0
 
 //13.4 Converting an enumeration to and from a string
+//If enumerators implicitly cast to an integral value, how do we get the type of enumerator?
+//A common solution is to create a function which can return a string of the enumerator type.
+constexpr std::string_view getMonsterName(MonsterType::MonsterType monster)
+{
+	switch (monster)
+	{
+	case MonsterType::orc: return "orc";
+	case MonsterType::troll: return "troll";
+	case MonsterType::goblin: return "goblin";
+	case MonsterType::ogre: return "ogre";
+	case MonsterType::skeleton: return "skeleton";
+	default: return "No Type";
+	}
+}
+//This does let us access the name, put isn't as convenient as typing std::cout << troll;
+//With information we have learned this is as good as we can get. There is a solutin covered when we talk about arrays.
+//Taking enumeration like this can also be useful for user input.
+constexpr std::optional<MonsterType::MonsterType> getMonsterType(std::string_view sv)
+{
+	if (sv == "orc") return MonsterType::orc;
+	if (sv == "troll") return MonsterType::troll;
+	if (sv == "goblin") return MonsterType::goblin;
+	if (sv == "ogre") return MonsterType::ogre;
+	if (sv == "skeleton") return MonsterType::skeleton;
+
+	return{};
+}
+
+//13.5 Introduction to overloading the I/O operators
+//
 
 int main()
 {
-#if 1
+#if 0 //13.4
+	//User input enumeration:
+	std::cout << "Enter a monster: orc, troll, goblin, ogre, skeleton ";
+	std::string s{};
+	std::cin >> s;
+
+	std::optional<MonsterType::MonsterType> mt{ getMonsterType(s) };
+
+	if (!mt)
+		std::cout << "You entered an invalid monster\n";
+	else
+		std::cout << "You entered: " << getMonsterName(*mt) << '\n';
+	
+	MonsterType::MonsterType troll{ MonsterType::troll };
+	std::cout << "Your monster is a: " << getMonsterName(troll) << ".\n";
+#endif
+
+#if 0
 	MonsterType::MonsterType m{};//zero initalized enumeration, but m ends up equaling orc.
 	if (m == MonsterType::orc)
 		std::cout << "Orc!\n";
 	std::cout << m << '\n';//Outputs: 0
 #endif
+
 #if 0
 	MonsterType::MonsterType monster{ MonsterType::troll };
 	if (monster == MonsterType::troll)
@@ -576,9 +625,11 @@ int main()
 	}
 	//Color orange = 8;//Error: 8 is an invalid type.
 #endif
+
 #if 0
 	Fraction f{5, 5}; //Instantiates a fraction object. Must use: {}
 #endif
+
 #if 0
 	int x = 7;
 	int y = 5;
