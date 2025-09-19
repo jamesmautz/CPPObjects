@@ -493,8 +493,89 @@ struct Fraction
 //Program-defined types can be contained in a header file to be used across various files. Structured the same there.
 
 //13.2 Unscoped enumerations
+//Enumerations: a compound data type whose values are restricted to a set of named constants(enumerators).
+enum Color
+{
+	red,
+	green,
+	blue,//trailing comma is intended, not needed but preferred.
+};
+//C++ enums seem similar to Java enums.
+//Enums are implicitly constexpr. Additionally, each enumerated type is considered a distinct type.
+//Enumerators are useful for documentation and readability. Best used with smaller sets of related constants.
+//		Things like: Card suits, days of the week, cardinal directions, etc..
+//Enumerators can also be useful for error throwing. Instead of throwing a magic number, you can throw a specific error.
+enum FileReadResult
+{
+	readResultSuccess,
+	readResultErrorFileOpen,
+	readResultErrorFileRead,
+	ReadREsultErrorFileParse,
+};
+//Above is an example of such a case with error throwing when opening a file.
+//Enums can be particularly useful for games and types of objects(sword, shield, staff, etc.)
+//Enumerator names can't be used in multiple enumerations within the same scope. Type "blue" can't be used for both Mood and Color.
+//	To avoid such cases you can prefix with the enumeration name: color_blue, mood_blue.
+//	You could also place enums in their own namespace: Color::Color x {Color::blue}; Mood::Mood y {Mood::blue};
+//In general you should try to place enumerations in a named scope region to avoid variable name overlapping.
+//We can use == or != to test if enumeration has the value of a specific enumerator.
+//13.2 Q1
+#if 0
+enum MonsterType
+{
+	orc,
+	goblin,
+	troll,
+	ogre,
+	skeleton,
+};
+#endif
+//13.2 Q2 Put MonsterType in a namespace
+namespace MonsterType
+{
+	enum MonsterType
+	{
+		orc,	 //0
+		goblin,  //1
+		troll,	 //2
+		ogre,	 //3
+		skeleton,//4
+	};
+}
+
+//13.3 Unscoped enumerator integral conversions
+//When we define an enumeration, each enumerator is given an integral value starting at 0. Shown above in MonsterType.
+//You can choose to explicitly define the values of enumerators: orc = -3, goblin = 5, etc.
+//If two enumerators are given the same number they become non-distinct, if orc & ogre = 3 then orc and ogre are interchangeable.
+//If enumeration is zero-initialized the enumeration will be given value 0. MonsterType a{}; a will equal 0.
+//So, if an enumeration is zero-initialized, and an enumerator has value 0, it will be initialized to that by default.
+//	As a result, we should try to make the first enumerator the most basic/default.
+//Enumerations will implicitly convert to integral values. std::cout << m; Outputs 0
+
+//13.4 Converting an enumeration to and from a string
+
 int main()
 {
+#if 1
+	MonsterType::MonsterType m{};//zero initalized enumeration, but m ends up equaling orc.
+	if (m == MonsterType::orc)
+		std::cout << "Orc!\n";
+	std::cout << m << '\n';//Outputs: 0
+#endif
+#if 0
+	MonsterType::MonsterType monster{ MonsterType::troll };
+	if (monster == MonsterType::troll)
+	{
+		std::cout << "The monster is a troll!\n";
+	}
+	Color apple = red; //Instantiates a Color object.
+	Color shirt = green;
+	if (shirt == green)
+	{
+		std::cout << "Your shirt is green.\n";
+	}
+	//Color orange = 8;//Error: 8 is an invalid type.
+#endif
 #if 0
 	Fraction f{5, 5}; //Instantiates a fraction object. Must use: {}
 #endif
