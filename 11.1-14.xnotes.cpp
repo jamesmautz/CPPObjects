@@ -583,10 +583,60 @@ constexpr std::optional<MonsterType::MonsterType> getMonsterType(std::string_vie
 }
 
 //13.5 Introduction to overloading the I/O operators
+//In C++, similar to function overloading we can also do operator overloading.
+//Fairly straightforward to implement. Essentially, structure like a function using the name of the operator for the name.
+//	At least one of the parameters must be a user-defined type(a class type or enumerated type) otherwise the compiler will error.
+//We can overload operator<< to print an enumerator:
+
+std::ostream& operator<<(std::ostream& out, MonsterType::MonsterType monster)
+{
+	out << getMonsterName(monster);
+	return out;
+}
+//In the above function we pass by reference to ensure that no copy of std::ostream objects are made.
+//			Additionally, the ostream object has to be modified.
+
+std::istream& operator>>(std::istream& in, MonsterType::MonsterType& monster)
+{
+	std::string s{};
+	in >> s;
+
+	std::optional<MonsterType::MonsterType> match = getMonsterType(s);
+	if (match)
+	{
+		monster = *match;
+		return in;
+	}
+	//In this case we didn't get a match, so input was invalid. Set the input stream to fail state.
+	in.setstate(std::ios_base::failbit);
+
+	return in;
+}
+
+//13.6 Scoped enumerationrs(enum classes)
 //
 
 int main()
 {
+#if 1
+	//13.5
+	std::cout << "Enter a monter: orc, troll, goblin, ogre, or skeleton: ";
+	MonsterType::MonsterType mon1{};
+	std::cin >> mon1;
+
+	if (std::cin)
+		std::cout << "You chose: " << getMonsterName(mon1) << ".\n";
+	else
+	{
+		std::cin.clear();
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::cout << "Your monster was invalid.\n";
+	}
+
+	//MonsterType::MonsterType mon = MonsterType::troll;
+	//std::cout << "Your monster is a " << mon << ".\n";
+#endif
+
 #if 0 //13.4
 	//User input enumeration:
 	std::cout << "Enter a monster: orc, troll, goblin, ogre, skeleton ";
