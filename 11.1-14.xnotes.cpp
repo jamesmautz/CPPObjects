@@ -614,11 +614,129 @@ std::istream& operator>>(std::istream& in, MonsterType::MonsterType& monster)
 }
 
 //13.6 Scoped enumerationrs(enum classes)
+//Unscoped enumerations allow you to do weird things. For example, we could compare MonsterType and Color with an if statement:
+//if(MonsterType::MonsterType == Color){} --- This will actually always evaluate to true, but doesn't make sense.
+//				As defined there is no reason for Color and MonsterType to evaluate as being equal.
+//		This happens because unscoped enums implicitly convert to integers.
+//Scoped enums(enumc class) won't implicitly convert to ints, they are only placed into the scope region of the enumeration.
+enum class Fruit
+{
+	banana,
+	apple,
+};
+//Using the above enum, we will get a compile error if we run a similar if statement.
+//Scoped enums function similar to a namespace for their enumerators.
+//Since scoped enums don't implicitly convert to int, you can't compare to other distinct enums or types
+//											(Unless you do some operator overloading or explicitly convert to int)
+//You can static_cast an int to a scoped enumerator. Fruit fruit = static_cast<Fruit> x; -- where x = 1, fruit = apple
+//13.6 Q1
+enum class Animal
+{
+	pig,
+	chicken,
+	goat,
+	cat,
+	dog,
+	duck,
+};
+
+constexpr std::string_view getAnimalName(Animal animal)
+{
+	switch (animal)
+	{
+	case Animal::pig: return "pig";
+	case Animal::chicken: return "chicken";
+	case Animal::goat: return "goat";
+	case Animal::cat: return "cat";
+	case Animal::dog: return "dog";
+	case Animal::duck: return "duck";
+	default: return "You did not enter a valid animal.";
+	}
+}
+
+void printNumberOfLegs(Animal animal)
+{
+	std::cout << "A " << getAnimalName(animal) << " has ";
+	switch (animal)
+	{
+	case Animal::chicken:
+	case Animal::duck:
+		std::cout << 2;
+		break;
+	case Animal::pig:
+	case Animal::goat:
+	case Animal::dog:
+	case Animal::cat:
+		std::cout << 4;
+		break;
+	default:
+		std::cout << "INVALID";
+		break;
+	}
+	std::cout << " legs.\n";
+}
+
+//13.7 Intro to structs, members, and member selection
+//Structs are user-defined types that allow us to bundle multiple variables into a single type.
+//The struct keyword tells the compiler that we are defining our own type, the body tells the compiler what is part of that type.
+//	Member variables: variables that belong to a struct
+struct Employee
+{
+	int id;
+	int age;
+	double wage;
+};
+
+//13.8 Struct aggregate initialization
+//By default, struct members are not initialized.
+//When doing aggregate initialization each member is initialized in order of declaration. id, age, and wage in this case.
+//		Like so: Employee jim {1, 27, 22000};
+//You can also initialize a struct to not fill all members: Employee jim {1, 74}; --- leaves wage empty, will initialize to 0.0.
+//Variables of a struct type can be const or constexpr.
+//C++ 20 added designated initialization to initialize certain member variables so that it doesn't have to be in order.
+//Employee james {.id{1}, .wage{22.4}}
+//This lets us add new members to the middle of the list of member variables in a struct, however,
+//											we should try to avoid doing so and should just add new members to the bottom.
+//Sometimes, you may need to update multiple variables of a struct type.
+//	We can do so individually, but that can be quite verbose. Instead, we can just reinitialize with an initializer list.
+//	Employee joe {2, 50, 74000}; joe {joe.id, 51, 80000}; --- Keeps the id but updated the age and wage.
+//We could use designated initializer for this, but we can't leave any variable empty otherwise it will use the default value.
+//	joe {.age{51}, .wage{80000}} This would reset id to 0. Instead: joe {.id{joe.id}, .age{51}, .wage{80000}}
+//You can also initialize a struct with another struct of the same type. Employee joseph {joe}; joseph == joe.
+
+//13.9 Default member initialization
 //
 
 int main()
 {
-#if 1
+#if 0
+	Employee james{ 1 };
+	//Since we only entered one variable, id is initialized, the others are 0 initialized.
+	std::cout << "ID: " << james.id << " Age: " << james.age << " Wage: " << james.wage << '\n';
+	Employee empty{};
+	//Since empty is empty, but initialized with curly braces, each member is 0 initialized.
+	std::cout << "ID: " << empty.id << " Age: " << empty.age << " Wage: " << empty.wage << '\n';
+	Employee jimbob{ .id{1}, .wage{22.4} };
+	//Since jimbob is initialized with designated initialization, we can skip age and still initialize wage.
+	std::cout << "ID: " << jimbob.id << " Age: " << jimbob.age << " Wage: " << jimbob.wage << '\n';
+#endif
+
+#if 0
+	//13.7 - I dont think this is how we are supposed to initialize structs
+	Employee jim;
+	jim.age = 84;
+	jim.wage = 220000;
+	jim.id = 1;
+#endif
+#if 0
+	//13.6
+	Animal animal1 = Animal::chicken;
+	Animal animal2 = Animal::dog;
+
+	printNumberOfLegs(animal1);
+	printNumberOfLegs(animal2);
+#endif
+#if 0
 	//13.5
 	std::cout << "Enter a monter: orc, troll, goblin, ogre, or skeleton: ";
 	MonsterType::MonsterType mon1{};
