@@ -482,7 +482,7 @@ void sort2(int& x, int& y)
 //13.1 Intro to program-defined(or user-defined) types
 //User-defined types allow us to create our own types for our own individual uses. This can be very useful for some more niche cases.
 //We can use the struct keyword:
-struct Fraction
+struct Fraction2
 {
 	int numerator{};
 	int denominator{};
@@ -618,7 +618,7 @@ std::istream& operator>>(std::istream& in, MonsterType::MonsterType& monster)
 //if(MonsterType::MonsterType == Color){} --- This will actually always evaluate to true, but doesn't make sense.
 //				As defined there is no reason for Color and MonsterType to evaluate as being equal.
 //		This happens because unscoped enums implicitly convert to integers.
-//Scoped enums(enumc class) won't implicitly convert to ints, they are only placed into the scope region of the enumeration.
+//Scoped enums(enum class) won't implicitly convert to ints, they are only placed into the scope region of the enumeration.
 enum class Fruit
 {
 	banana,
@@ -682,9 +682,9 @@ void printNumberOfLegs(Animal animal)
 //	Member variables: variables that belong to a struct
 struct Employee
 {
-	int id;
-	int age;
-	double wage;
+	int id{};
+	int age{};
+	double wage{};
 };
 
 //13.8 Struct aggregate initialization
@@ -705,10 +705,284 @@ struct Employee
 //You can also initialize a struct with another struct of the same type. Employee joseph {joe}; joseph == joe.
 
 //13.9 Default member initialization
-//
+//When we define a struct we can also define default values for members.
+//These default values are overridden with explicit initializers if called.
+//We can make the defualt wage 50000, but if we initialize john.wage to 43000, john.wage will be 43000.
+//Generally, we should try to provide default values for all members, even if the default is just 0.
+
+//13.10 Passing and return structs
+//Typically, we should pass structs by reference:
+void printEmployee(const Employee& employee)
+{
+	std::cout << "ID: " << employee.id << '\n';
+	std::cout << "Age: " << employee.age << '\n';
+	std::cout << "Wage: " << employee.wage << '\n';
+}
+//There may be cases where you create and use a struct only once. In those cases, it can be time-consuming and space expensive
+//									having to initialize an entirely new struct variable just to use it once.
+//In such cases, we can use a temporary struct and pass that through a function:
+//2 ways: printEmployee(Employee {1, 25, 20000}); OR printEmployee({1, 25, 20000});
+//When returning structs, we can just return a struct object.
+struct Point3d
+{
+	double x{ 12 };
+	double y{ 0.0 };
+	double z{ 0.0 };
+};
+
+Point3d getZeroPoint()
+{
+	//If x, y, and z are all defualt initialized:
+	//return Point3d{};
+	return Point3d{ 0.0, 0.0, 0.0 };
+}
+//When returning a struct, structs are usually returned by value so as to not return a dangling reference.
+//	Additionally, when returning a struct for situations similar to the one above, we can just return a temp struct object.
+//13.10 Q1
+struct Website
+{
+	int ads{ 0 };
+	double percent{ 0 };
+	double earnings{ 0 };
+};
+void printWebsite(const Website& website)
+{
+	std::cout << "Ads watched: " << website.ads << '\n';
+	std::cout << "Percent of users who clicked: " << website.percent << '\n';
+	std::cout << "Average earnings per clicked ad: " << website.earnings << '\n';
+	std::cout << "Total made: " << website.ads * (website.percent / 100) * website.earnings << '\n';
+}
+
+//13.10 Q2
+struct Fraction 
+{
+	int numerator{ 0 };
+	int denominator{ 1 };
+};
+
+Fraction userDefinedFraction()
+{
+	std::cout << "Enter a numerator: ";
+	int num;
+	std::cin >> num;
+
+	std::cout << "Enter a denominator: ";
+	int den;
+	std::cin >> den;
+	std::cout << '\n';
+
+	return Fraction{ num, den };
+}
+
+void multFraction(Fraction frac1, Fraction frac2)
+{
+	std::cout << "Your fractions multiplied together: " << frac1.numerator * frac2.numerator << '/' << frac1.denominator * frac2.denominator;
+}
+
+//13.11 Struct miscellany
+//You can define structs within structs. If an employee only exists within a company, you could use nested structs.
+//You can also use struct defined types in other structs:
+struct Company
+{
+	int employeeCount{ 0 };
+	Employee CEO{};
+};
+//In structs, we want our struct to own the data it holds(not view it). So, if we are using a string literal for a value,
+//								we should use std::string instead of std::string_view.
+//			We should avoid references and pointers as struct members.
+//Typically, the size of a struct is the sum of all its members.
+//Employee has a size of 16 -- 4(int id) + 4(int age) + 8(double wage).
+//What we can say for sure, is that a struct is at least as big as the sum of all its members.
+//		Typically, the compiler will add some padding, so Employee may only take up 16 bytes, but the compiler may alot 18.
+// This padding can actually have a pretty significant impact, to reduce padding, we can define members in order of decreasing size.
+
+//13.12 Member selection with pointers and references
+//The member selection operator(.) can be used directly on a reference. Covered in unit 13.10.
+//The member selection operator can't be used directly on a pointer to a struct.
+//Instead, have to do this: Employee* ptr {&joe}; std::cout << ptr->id; -> used to select member from pointer to object.
+
+//13.13 Class templates
+//We talked about function templates(generics) earlier. Class templates aim to provide similar functionality for structs.
+//For ex. we may want a program that can work with pairs of ints.
+struct PairStruct { //This struct is dead, replaced by Struct
+	int a;
+	int b;
+};
+//But what if we want a version with doubles? Then we would have to make a distinc PairDouble struct.
+//Class templates are a template definition for instantiating class types.
+template <typename T>
+struct Pair {
+	T a{};
+	T b{};
+};
+//These are clearly pretty similar to creating generic functions.
+//When called inside main: Pair<int> p1 {5, 6}; Pair<double> {2.2, 3.3}; etc...
+//This doesn't solve the issue of needing multiple functions to actually work with these.
+//For ex. if we wanted to make a max() function to find the max of pairs we would need one function for ints and another for doubles.
+template <typename T>
+constexpr T max(Pair<T> p) {
+	return(p.a < p.b ? p.b : p.a);
+}
+//So, we solve that issue with more generics, obviously.
+//Class templates can have members which are both template types and non-template types. For ex. Pair could be T and int.
+//We can also have Class templates with multiple types. template <typename T, typename U, typename X, etc...>
+//Because working with pairs is so common, C++ has a std::pair class as part of it's standard library.
+//std::pair<int, int> p1 {1, 2}; std::pair<int, double> p2 {1, 2.2};
+//If you want Class templates usable in multiple files, define it in a header file.
+
+//13.14 Class template argument deduction and deduction guides
+//Starting in C++17 when instantiating an object from a class template the compiler can deduce the template types.
+//std::pair<int, int> p1 {1,2}; == std::pair p1{1,2};
+//Deduction isn't performed if only one type is provided. std::pair<> p1 OR std::pair<int> will cause error.
+//Often, this will work automatically, however, sometimes you will have issues with it.
+//Our pair function, while similar to std::pair, will not work with type deduction automatically.
+//In such cases, we must provide a template guide:
+template <typename T, typename U>
+struct CTADPair {
+	T a{};
+	U b{};
+};
+//CTAD template guide:
+template <typename T, typename U>
+CTADPair(T, U) -> CTADPair<T, U>;
+
+//13.15 Alias templates
+//You can create an alias for a class template like normal.
+//using Point = Pair<int>; Point p {1, 2}; --- Point is a Pair here.
+//We can define an alias template, which can be used to instantiate type aliases.
+template <typename T>
+using Coord = Pair<T>;
+
+template<typename T>
+void print(const Coord<T>& c) {
+	std::cout << c.a << ' ' << c.b << '\n';
+}
+//13.x Q1 Functions:
+enum class Monster {
+	ogre,
+	dragon,
+	orc,
+	spider,
+	slime,
+};
+
+std::string_view monsterToString(Monster monster) {
+	switch (monster)
+	{
+	case Monster::ogre: return "Ogre";
+	case Monster::dragon: return "Dragon";
+	case Monster::orc: return "Orc";
+	case Monster::spider: return "Giant Spider";
+	case Monster::slime: return "Slime";
+	default: return "INVALID";
+	}
+}
+
+struct MonsterStats {
+	Monster monsterType{};
+	std::string name{};
+	int health{};
+};
+
+void printMonster(MonsterStats monster) {
+	std::cout << "This " << monsterToString(monster.monsterType) << " is named " << monster.name << " and has " << monster.health << " health.\n";
+}
+//13.x Q3 Functions:
+//Using C++ 20, so no deduction guide required.
+template <typename T>
+struct Triad {
+	T x;
+	T y;
+	T z;
+};
+
+template <typename T>
+void print(Triad<T> obj) {
+	std::cout << '[' << obj.x << ", " << obj.y << ", " << obj.z << ']';
+}
 
 int main()
 {
+	Triad t1{ 1, 2, 3 }; // note: uses CTAD to deduce template arguments
+	print(t1);
+
+	Triad t2{ 1.2, 3.4, 5.6 }; // note: uses CTAD to deduce template arguments
+	print(t2);
+	MonsterStats ogre{ Monster::ogre, "Torg", 145 };
+	MonsterStats slime{ Monster::slime, "Blurp", 23 };
+	printMonster(ogre);
+	printMonster(slime);
+
+#if 0
+	//13.15
+	Coord<int> p1{ 1, 2 };
+	Coord p2{ 1, 2 };
+
+	std::cout << p1.a << ' ' << p1.b << '\n';
+	print(p2);
+#endif
+
+#if 0
+	//13.13
+	Pair<int> p1{ 5, 6 };        // instantiates Pair<int> and creates object p1
+	std::cout << p1.a << ' ' << p1.b << '\n';
+	std::cout << max<int>(p1) << " is larger.\n";
+
+	Pair<double> p2{ 1.2, 3.4 }; // instantiates Pair<double> and creates object p2
+	std::cout << p2.a << ' ' << p2.b << '\n';
+	std::cout << max<double>(p2) << " is larger.\n";
+
+	Pair<double> p3{ 7.8, 9.0 }; // creates object p3 using prior definition for Pair<double>
+	std::cout << p3.a << ' ' << p3.b << '\n';
+	std::cout << max<double>(p3) << " is larger.\n";
+#endif
+
+#if 0
+	Employee ceo{ 1, 62, 350000 };
+	Employee* ptr = &ceo;
+	std::cout << ptr->id << '\n';
+#endif
+#if 0
+	//13.11
+	Employee ceo{ 1, 62, 350000 };
+	Company company{ 27, ceo };
+
+#endif
+
+#if 0
+	//13.10 Q2
+	Fraction frac1 = userDefinedFraction();
+	Fraction frac2 = userDefinedFraction();
+	multFraction(frac1, frac2);
+
+
+	//13.10 Q1
+	std::cout << "Enter how many ads were watched today: ";
+	int ads;
+	std::cin >> ads;
+	std::cout << "What percentage of users clicked on an add: ";
+	double percent;
+	std::cin >> percent;
+	std::cout << "What were your average earnings per ad clicked: ";
+	double earnings;
+	std::cin >> earnings;
+	printWebsite({ ads, percent, earnings });
+
+
+	Point3d zero = getZeroPoint();
+
+	if (zero.x == 0.0 && zero.y == 0.0 && zero.z == 0.0)
+		std::cout << "The point is zero\n";
+	else
+		std::cout << "The point is not zero\n";
+
+
+	Employee james{1, 25, 20000};
+	printEmployee(james);
+	//Use temp employee objects for printEmployee.
+	printEmployee(Employee{ 2, 66, 200000 });
+	printEmployee({ 3, 12, 15000 });
+#endif
 #if 0
 	Employee james{ 1 };
 	//Since we only entered one variable, id is initialized, the others are 0 initialized.
@@ -795,7 +1069,7 @@ int main()
 #endif
 
 #if 0
-	Fraction f{5, 5}; //Instantiates a fraction object. Must use: {}
+	Fraction2 f{5, 5}; //Instantiates a fraction object. Must use: {}
 #endif
 
 #if 0
