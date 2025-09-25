@@ -948,14 +948,14 @@ struct Person {
 //Additionally, we can define member functions above member variables. We could define kisses() above name and age, it would still compile.
 //You can overload member functions.
 //Member functions can be in both classes and structs.
-struct IntPair {
+struct IntPair1 {
 	int x;
 	int y;
 
 	void print() {
 		std::cout << '(' << x << ", " << y << ")\n";
 	}
-	bool isEqual(const IntPair& pair) {
+	bool isEqual(const IntPair1& pair) {
 		return (x == pair.x) && (y == pair.y); //Initially had if/else here, but this is far more succinct.
 	}
 };
@@ -1135,14 +1135,46 @@ public:
 	}
 };
 
+//14.13 Temporary class objects
+//Similar to how we can return temp types like 5+3 for a sum or printing 8 by printing 4+4, we can create temporary class objects.
+//That way we can use a class object one time and forget about it, instead of having to define a new object every time we want one.
+class IntPair {
+private:
+	int m_x{};
+	int m_y{};
+public:
+	IntPair(int x, int y) : m_x{ x }, m_y{ y } {}
+
+	int x() const { return m_x; }
+	int y() const { return m_y; }
+};
+
+void print(IntPair p)
+{
+	std::cout << "(" << p.x() << ", " << p.y() << ")\n";
+}
+//Since the print function isn't a member, we can create a temporary class object. It showed us how to do this already.
+//Call print(IntPair {7, 5}) OR print({5, 7}) --- second version requires implicit conversion.
+
+//14.14 Intro to the copy constructor
 
 int main()
 {
 
+#if 1
+	//14.13
+	IntPair p{ 3, 4 };
+	print(p); // prints (3, 4)
+#endif
+
+#if 0
+	//14.12
 	Ball def{};
 	Ball blue{ "blue" };
 	Ball twenty{ 20.0 };
 	Ball blueTwenty{ "blue", 20.0 };
+#endif
+
 #if 0
 	//14.10 Q1
 	Ball1 blue{ "blue", 10.0 };
