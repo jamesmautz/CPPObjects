@@ -901,8 +901,112 @@ void print(Triad<T> obj) {
 	std::cout << '[' << obj.x << ", " << obj.y << ", " << obj.z << ']';
 }
 
+//14.1 Intro to object-oriented programming
+//OOP is super useful in creating modular and manageable code.
+//Already covered OOP at university, might be zooming here.
+
+//14.2 Intro to classes
+//Last chapter we discussed structs, structs fall short at providing a way to enforce class invariants.
+//For example, if we create a Fraction class, it is hard to enforce that the denominator can't conatain 0.
+//	As a result, it is easy for the user to cause a divide by 0 error.
+//Classes can be used a solution to this problem, which are structurally similar to structs:
+class EmployeeClass {
+	int m_id{};
+	int m_age{};
+public: //Any variable under this will be public.
+	double m_wage{};
+};
+//Classes are different than structs because their members are private by default.
+//To make members accessible from outside the class, you must declare that they are public.
+
+//14.3 Member functions
+//Member functions are functions which are defined as part of a class/struct.
+struct Date {
+	int year{};
+	int month{};
+	int day{};
+
+	void print() const {//made const in 14.4
+		std::cout << year << '/' << month << '/' << day << '\n';
+	}
+};
+//Member functions are good especially for this print() case. Since it is a member function, print() can only be used
+//		on date objects, which is what print() is designed for. This helps to disallow misuse of the print() function.
+//Additionally, member functions are called like we call a member variable: today.print(); where today is type Date
+//You can also have member functions with parameters of both standard and user defined types:
+struct Person {
+	std::string name{};
+	int age{};
+
+	void kisses(const Person& person) {
+		std::cout << name << " kisses " << person.name << ".\n";
+	}
+	void kisses(const Person& person, std::string_view suffix) {
+		std::cout << name << " kisses " << person.name << suffix << '\n';
+	}
+};
+//Additionally, we can define member functions above member variables. We could define kisses() above name and age, it would still compile.
+//You can overload member functions.
+//Member functions can be in both classes and structs.
+struct IntPair {
+	int x;
+	int y;
+
+	void print() {
+		std::cout << '(' << x << ", " << y << ")\n";
+	}
+	bool isEqual(const IntPair& pair) {
+		return (x == pair.x) && (y == pair.y); //Initially had if/else here, but this is far more succinct.
+	}
+};
+
+//14.4 Const class objects and const member functions
+//modifying the members of consts objects is disallowed: const Date today...; today.day++; --- causes compiler error
+//Additionally, const objects can't call non-const member functions const Date today...; today.print() --- error
+//Const member function definition: void print() const{ function body } ---- const goes after the parameter list
+//const member functions can be called on non const objects.
+//As a result, it is best practice to make all non-modifying member functions const functions.
+//This also helps to alleviate more niche issues where you call a member function on a const reference:
+void doStuff(const Date& date) {
+	date.print();//This was causing compiler error, had to make print() const.
+}
+//You can also overload a member function with a const and non-const version: void print(){} void print() const{}
+//						^The above functions still work, non-const called on non-const instances, const called on const.
+
+//14.5 Public and private members and access specifiers
+//
+
 int main()
 {
+#if 0
+	//14.3 Q1
+	IntPair p1{ 1, 2 };
+	IntPair p2{ 3, 4 };
+
+	std::cout << "p1: ";
+	p1.print();
+
+	std::cout << "p2: ";
+	p2.print();
+
+	std::cout << "p1 and p1 " << (p1.isEqual(p1) ? "are equal\n" : "are not equal\n");
+	std::cout << "p1 and p2 " << (p1.isEqual(p2) ? "are equal\n" : "are not equal\n");
+#endif
+#if 0
+	//14.3
+	Date today{ 2025, 9, 24 };
+	today.print();
+	Person joe{ "Joe", 29 };
+	Person kate{ "Kate", 28 };
+
+	joe.kisses(kate);
+	kate.kisses(joe);
+	kate.kisses({ "James", 25 }); //temp Person object James
+	kate.kisses(joe, " with passion.");
+#endif
+
+#if 0
+	//13.x Quiz stuff:
 	Triad t1{ 1, 2, 3 }; // note: uses CTAD to deduce template arguments
 	print(t1);
 
@@ -912,6 +1016,7 @@ int main()
 	MonsterStats slime{ Monster::slime, "Blurp", 23 };
 	printMonster(ogre);
 	printMonster(slime);
+#endif
 
 #if 0
 	//13.15
@@ -1200,6 +1305,7 @@ int main()
 
 	factorial<-3>(); // should fail to compile
 #endif
+
 	//11.10 Function calls:
 #if 0
 	//This shows an example of calling generics from another file. You can't define generic functions
@@ -1218,7 +1324,6 @@ int main()
 	std::cout << sub(3.5, 2) << '\n';
 	std::cout << sub(4, 1.5) << '\n';
 #endif
-
 
 	return 0;
 }
