@@ -723,18 +723,18 @@ void printEmployee(const Employee& employee)
 //In such cases, we can use a temporary struct and pass that through a function:
 //2 ways: printEmployee(Employee {1, 25, 20000}); OR printEmployee({1, 25, 20000});
 //When returning structs, we can just return a struct object.
-struct Point3d
+struct Point3dStruct
 {
 	double x{ 12 };
 	double y{ 0.0 };
 	double z{ 0.0 };
 };
 
-Point3d getZeroPoint()
+Point3dStruct getZeroPoint()
 {
 	//If x, y, and z are all defualt initialized:
 	//return Point3d{};
-	return Point3d{ 0.0, 0.0, 0.0 };
+	return Point3dStruct{ 0.0, 0.0, 0.0 };
 }
 //When returning a struct, structs are usually returned by value so as to not return a dangling reference.
 //	Additionally, when returning a struct for situations similar to the one above, we can just return a temp struct object.
@@ -921,7 +921,7 @@ public: //Any variable under this will be public.
 
 //14.3 Member functions
 //Member functions are functions which are defined as part of a class/struct.
-struct Date {
+struct DateStruct {
 	int year{};
 	int month{};
 	int day{};
@@ -967,17 +967,224 @@ struct IntPair {
 //const member functions can be called on non const objects.
 //As a result, it is best practice to make all non-modifying member functions const functions.
 //This also helps to alleviate more niche issues where you call a member function on a const reference:
-void doStuff(const Date& date) {
+void doStuff(const DateStruct& date) {
 	date.print();//This was causing compiler error, had to make print() const.
 }
 //You can also overload a member function with a const and non-const version: void print(){} void print() const{}
 //						^The above functions still work, non-const called on non-const instances, const called on const.
 
 //14.5 Public and private members and access specifiers
-//
+//structs are public by default, classes are private by default.
+//You can make specific variables/functions private/public by declaring them under: public: or private:
+//Structs should remain entirely public because they are used as aggregates.
+//Access levels work on a per class basis. That means that Person p can access variables from Person a if used in a function:
+//public:
+//	void kisses(const Person& p) const {std:: cout << p.m_name;}
+//This code would still be able to compile even though m_name is a private variable.
+//Use a struct when the following is true: You have a simple collection of data with no requirement to restrict access,
+//										   Agregate initiialization is sufficent, AND you have no class invariants, setup or clean up needs
+//14.5 Q2
+class Point3d {
+private:
+	int m_x{};
+	int m_y{};
+	int m_z{};
+public:
+	void setValues(int x, int y, int z) { //not const cause we are changing values.
+		m_x = x;
+		m_y = y;
+		m_z = z;
+	}
+	void print() const{
+		std::cout << '<' << m_x << ", " << m_y << ", " << m_z << ">\n";
+	}
+	bool isEqual(Point3d& p) {
+		return (m_x == p.m_x) && (m_y == p.m_y) && (m_z == p.m_z);
+	}
+};
+//14.6 Access functions
+//Access functions are member functions with the purpose of retrieving or changing member variables.(Getters and setters)
+//Getters are generally made const, setters can't be const.
+class Date {
+private:
+	int m_year{ 2025 };
+	int m_month{ 9 };
+	int m_day{ 25 };
+
+public:
+	void print() {
+		std::cout << m_year << '/' << m_month << '/' << m_day << '\n';
+	}
+	//Getters and setters: --- Updated to return by const reference in 14.7
+	const int& getYear() const { //getter for year
+		return m_year;
+	}
+	void setYear(int year) { //setter for year
+		m_year = year;
+	}
+	const int& getMonth() const { //getter for month
+		return m_month;
+	}
+	void setMonth(int month) { // setter for month
+		m_month = month;
+	}
+	const int& getDay() const { //getter for day
+		return m_day;
+	}
+	void setDay(int day) { // setter for day
+		m_day = day;
+	}
+};
+//No specific naming conventions for getters/setters. Usually prefixed with get or set.
+//You could choose to just use the member name(year, month, day) with no prefix and just function overload.
+//Sometimes people just use set, and don't prefix getters.
+//Getters should only return by value or by const lvalue reference.
+
+//14.7 Member functions returning references to data members
+//Returning member variables by value can be pretty expensive. Let's update Date to return by const lvalue reference
+//Now, when date.getYear is called, date.m_year is returned by reference, instead of making a copy of m_year.
+//Often, we can use auto on getters to ensure that no type conversion occurs.
+//		However, this makes documentation more difficult, so generally we should be explicit with our return types.
+//We need to make sure that anytime we use a reference for getters that we make it constant.
+//Date d{}; f.getYear() = 6; == m_year = 6; If getYear() returns a non-const reference, we can subvert the control scheme
+//											and access/change private variables.
+//const member functions can't return a non-const reference to members.
+//		int& getYear() const{} will cause an error. Need to do const int& getYear() const{}
+
+//14.8 The benefits of encapsulation
+//I covered pretty much all of this at university.
+
+//14.9 Intro to constructors
+//When a class type(struct) is an aggregate, we can use aggregate initialization pretty easily to construct an object.
+//Unforutunately, we can't do aggregate initialization if we have any private members.
+//A constructor aims to resolve this issue. It is a special member function called automatically after a non-aggrege object is created.
+//Constructors must have the same name as the class(with same capitalization).
+//Constructors don't have a return type(not void)
+class Foo {
+private:
+	int m_x{};
+	int m_y{};
+public:
+	Foo(int x, int y) : m_x{x}, m_y{y}//This is a member initialization list. It's how we assign values.
+	{ //Constructor function - this constructor sucks. Doesn't assing values to m_x or m_y
+		std::cout << "Foo(" << m_x << ", " << m_y << ") constructed\n";
+	}
+
+	void print() const
+	{
+		std::cout << "Foo(" << m_x << ", " << m_y << ")\n";
+	}
+};
+//Constructors will implicitly convert anything which is convertible. You can pass a char into an int constructor.
+//Constructors can't be const.
+
+//14.10 Constructor member initializer lists
+//You set initial values with a member initialization list: Foo(int x, int y) : m_x{x}, m_y{y}{}
+//The members in a member initialization list are always done in order of definition. If x comes before y, x goes first.
+//Often, the method body of constructors is left empty.
+//Handling invalid input in a member list is difficult. Not many tools to check input with.
+//We could use the function body to check for invalid input using assert()...
+//As we will talk about later in the course, we should just throw an exception.
+//14.10 Q1
+class Ball1 { //made Ball1 after making Ball for 14.12 Q1
+private:
+	std::string m_color{};
+	double m_radius;
+public:
+	Ball1(std::string color, double radius) : m_color{ color }, m_radius{ radius }
+	{}
+	const std::string& getColor() const { return m_color; }
+	const double& getRadius() const { return m_radius; }
+	
+};
+void print(const Ball1& ball) {
+	std::cout << "Ball(" << ball.getColor() << ", " << ball.getRadius() << ")\n";
+}
+
+//14.11 Default constructors and default arguments
+//A default constructor is used to construct an object with no passed parameters.
+//Similar to a Point3d with coordinates(0,0,0)
+//When using a default construct we can make an object with both value initialization and default:
+//				Foo foo{}; and Foo foo2; will both use the default constructor.
+//You can overload the constructor, but you can't have two defaults.
+//If no constructor is declared, the compiler may choose to generate a default one for us. This is mostly only useful if you
+//		have no data members.
+//You can choose to use "= default" to explicitly generate a default constructor: Foo() = default; -- generates default
+//We should only create default constructors when it makes sense for one to exist.
+//Employee probably shouldn't have a default constructor, but Point3d should.
+
+//14.12 Delegating constructors
+//Dont call constructors directly from the body of another function.
+//14.12 Q2
+class Ball {
+private:
+	std::string m_color{ "black" };
+	double m_radius{ 10.0 };
+public:
+	Ball(double radius) : Ball{"black", radius}
+	{//empty block, we don't need to call print because that gets called in the delegate constructor
+	}
+	//Handles both cases, default, and only string.
+	Ball(std::string_view str="black", double radius=10.0) : m_color{str}, m_radius{radius}
+	{
+		print();
+	}
+
+	void print() {
+		std::cout << "Ball(" << m_color << ", " << m_radius << ")\n";
+	}
+};
+
 
 int main()
 {
+
+	Ball def{};
+	Ball blue{ "blue" };
+	Ball twenty{ 20.0 };
+	Ball blueTwenty{ "blue", 20.0 };
+#if 0
+	//14.10 Q1
+	Ball1 blue{ "blue", 10.0 };
+	print(blue);
+
+	Ball1 red{ "red", 12.0 };
+	print(red);
+#endif
+
+#if 0
+	//14.9/10
+	Foo foo{ 6, 7 };
+	foo.print();
+#endif
+
+#if 0
+	//14.6
+	Date d{};
+	d.setYear(2021);
+	std::cout << "The year is: " << d.getYear() << '\n';
+#endif
+
+#if 0
+	//14.5 Q2a
+	Point3d point;
+	point.setValues(1, 2, 3);
+
+	point.print();
+	//14.5 Q2b
+	Point3d point1{};
+	point1.setValues(1, 2, 3);
+
+	Point3d point2{};
+	point2.setValues(1, 2, 3);
+
+	std::cout << "point 1 and point 2 are" << (point1.isEqual(point2) ? "" : " not") << " equal\n";
+
+	Point3d point3{};
+	point3.setValues(3, 4, 5);
+
+	std::cout << "point 1 and point 3 are" << (point1.isEqual(point3) ? "" : " not") << " equal\n";
+#endif
 #if 0
 	//14.3 Q1
 	IntPair p1{ 1, 2 };
@@ -994,7 +1201,7 @@ int main()
 #endif
 #if 0
 	//14.3
-	Date today{ 2025, 9, 24 };
+	DateStruct today{ 2025, 9, 24 };
 	today.print();
 	Person joe{ "Joe", 29 };
 	Person kate{ "Kate", 28 };
@@ -1074,7 +1281,7 @@ int main()
 	printWebsite({ ads, percent, earnings });
 
 
-	Point3d zero = getZeroPoint();
+	Point3dStruct zero = getZeroPoint();
 
 	if (zero.x == 0.0 && zero.y == 0.0 && zero.z == 0.0)
 		std::cout << "The point is zero\n";
