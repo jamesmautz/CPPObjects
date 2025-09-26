@@ -59,7 +59,7 @@ double add(double x, double y)
 
 //11.5 Default arguments
 //Default argument: a default value provided for a function parameter
-void print(int x, int y = 10)//--- 10 is the default argument for y, still needs an x when called.
+void print1(int x, int y = 10)//--- 10 is the default argument for y, still needs an x when called.
 {
 	std::cout << "x: " << x << '\n';
 	std::cout << "y: " << y << '\n';
@@ -754,13 +754,13 @@ void printWebsite(const Website& website)
 }
 
 //13.10 Q2
-struct Fraction 
+struct Fraction1 
 {
 	int numerator{ 0 };
 	int denominator{ 1 };
 };
 
-Fraction userDefinedFraction()
+Fraction1 userDefinedFraction()
 {
 	std::cout << "Enter a numerator: ";
 	int num;
@@ -771,10 +771,10 @@ Fraction userDefinedFraction()
 	std::cin >> den;
 	std::cout << '\n';
 
-	return Fraction{ num, den };
+	return Fraction1{ num, den };
 }
 
-void multFraction(Fraction frac1, Fraction frac2)
+void multFraction(Fraction1 frac1, Fraction1 frac2)
 {
 	std::cout << "Your fractions multiplied together: " << frac1.numerator * frac2.numerator << '/' << frac1.denominator * frac2.denominator;
 }
@@ -1157,11 +1157,140 @@ void print(IntPair p)
 //Call print(IntPair {7, 5}) OR print({5, 7}) --- second version requires implicit conversion.
 
 //14.14 Intro to the copy constructor
+//The copy constructor lets us place an already made class object into the constructor for an object and make a copy.
+//Like so: IntPair pair {4, 5}; IntPair copy {pair}; --- this will compile fine. copy will be a distinct object with identical members.
+//You can make an explicit copy constructor, but if you don't the compiler will make an implicit one.
+class Fraction {
+private:
+	int m_numerator{ 0 };
+	int m_denominator{ 1 };
+
+public:
+	Fraction(int numerator = 0, int denominator = 1) : m_numerator{ numerator }, m_denominator{ denominator }
+	{	}
+	//Copy constructor:
+	Fraction(const Fraction& fraction) : m_numerator{ fraction.m_numerator }, m_denominator{ fraction.m_denominator }
+	{
+		std::cout << "Copy constructor called.\n";
+	}
+	void print() const {
+		std::cout << "Fraction(" << m_numerator << ", " << m_denominator << ")\n";
+	}
+};
+//The copy constructor above is functionally identical, it just has an output line.
+//Generally, we should avoid similar cases, copy constructors should be functionally identical.
+//In fact, we should generally prefer to use the implicit copy constructor unless we have a specific reason to make our own.
+//When making a copy constructor, the parameter MUST be a reference.
+//When passing an object by value the implicit copy constructor is called.
+//When returning by value the copy constructor is also called to make a copy.
+//We can use = default; to explicitly show that we are using the default copy constructor.
+//		Fraction(const Fraction& fraction) = default;
+//Sometimes, we don't want a class to be copyable, in such cases we should use =delete.
+//		Fraction(const Fraction& fraction) = delete;
+
+//14.15 Class initialization and copy elision
+//Copy elision is when the compiler chooses to ignore some copy to prevent inefficient code.
+//We could call Fraction f {Fraction {5, 3}}; ---This would compile, but it is inefficient, we create a temp object and need 2 constructors.
+//Instead, we can just write Fraction f{5, 3}; ---Copy elision is when the compiler takes the above code and turns it into this.
+
+//14.16 Converting constructors and the explicit keyword
+//Converting constructor: A constructor which can be used to perform an implicit conversion. By default, all constructors are converting.
+//Only one user-defined conversion can be applied at a time. 
+// We can't input a string literal into a string_view parameter which gets converted to a std::string. Thats 2 conversions.
+//Instead, we need to explicitly cast a string literal to sv: "Joe"sv or pass a copy constructed object, Employee copy{Employee{}}
+class Dollars
+{
+private:
+	int m_dollars{};
+
+public:
+	explicit Dollars(int d)
+		: m_dollars{ d }
+	{
+	}
+
+	int getDollars() const { return m_dollars; }
+};
+
+void print(Dollars d)
+{
+	std::cout << "$" << d.getDollars();
+}
+//For example, if we use above code and type print(5), we may not be expecting an implicit cast of 5 to a Dollar.
+//The user may just want to print '5' -- intead, print() prints "$5"
+//To avoid these situations, we can use the "explicit" keyword on the constructor to ensure that implicit conversion doesn't happen.
+//In general, we should make sure that single argument constructors are made explicit.
+//Copy and move constructors should not be made explicit.
+
+//14.17 Constexpr aggregates and classes
+//Member functions can be made constexpr with the constexpr keyword like normal functions.
+//	These functions can be evaluated at either compile or run time.
+//Aggregates implicitly support constexpr, so we can make struct objects constexpr.
+struct constEx {
+	int m_x{};
+	int m_y{};
+
+	constexpr int greater() const {
+		return (m_x > m_y) ? m_x : m_y;
+	}
+};
+//Classes can be made to be compatible with constexpr, but you need to make your constructor a constexpr function.
+// constexpr constEx(int x, int y) : m_x{x}, m_y{y} {}
+
+//14.x Q1
+class Point2d {
+private:
+	double m_x{ 0.0 };
+	double m_y{ 0.0 };
+
+public:
+	Point2d() = default;//This is only necessary to make Point2d third error.
+	Point2d(double x, double y) : m_x{ x }, m_y{ y } {}
+	void print() {
+		std::cout << "Point2d(" << m_x << ", " << m_y << ")\n";
+	}
+	double distanceTo(const Point2d& point) {
+		return std::sqrt((m_x - point.m_x) * (m_x - point.m_x) + (m_y - point.m_y) * (m_y - point.m_y));
+	}
+};
 
 int main()
 {
+	//14.x Q1
+	Point2d first{};
+	Point2d second{ 3.0, 4.0 };
 
-#if 1
+	 //Point2d third{ 4.0 }; // should error if uncommented
+
+	first.print();
+	second.print();
+
+	std::cout << "Distance between two points: " << first.distanceTo(second) << '\n';
+#if 0
+	//14.17
+	constexpr constEx p{ 5, 6 };        // now constexpr
+	std::cout << p.greater() << '\n'; // p.greater() evaluates at runtime or compile-time
+
+	constexpr int g{ p.greater() };  // p.greater() must evaluate at compile-time
+	std::cout << g << '\n';
+#endif
+
+#if 0
+	//14.16
+	//print(5); --- Wont compile after Dollars constructor made explicit. Intead:
+	print(Dollars{ 5 });
+#endif
+
+#if 0
+	//14.14
+	Fraction f{ 5, 3 };  // Calls Fraction(int, int) constructor
+	Fraction fCopy{ f }; // Calls Fraction(const Fraction&) copy constructor
+
+	f.print();
+	fCopy.print();
+#endif
+
+#if 0
 	//14.13
 	IntPair p{ 3, 4 };
 	print(p); // prints (3, 4)
@@ -1295,8 +1424,8 @@ int main()
 
 #if 0
 	//13.10 Q2
-	Fraction frac1 = userDefinedFraction();
-	Fraction frac2 = userDefinedFraction();
+	Fraction1 frac1 = userDefinedFraction();
+	Fraction1 frac2 = userDefinedFraction();
 	multFraction(frac1, frac2);
 
 
