@@ -30,6 +30,9 @@
     <ClCompile Include="11.1-14.xnotes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="15.1-17.x.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Add.h">
