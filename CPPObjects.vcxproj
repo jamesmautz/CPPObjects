@@ -153,6 +153,7 @@
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
+    <ClCompile Include="Date.cpp" />
     <ClCompile Include="NameSpaceHeaders.cpp">
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="Add.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Date.h" />
     <ClInclude Include="GlobalConsts.h" />
     <ClInclude Include="NameSpaceHeaders.h" />
     <ClInclude Include="Random.h" />
