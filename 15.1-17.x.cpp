@@ -119,9 +119,88 @@ public:
 //1. Destructor must have the same name as the class preceded by a ~.
 //2. The destructor can't have any arguments.
 //3. The destructor can't have a return type.
+class Simple
+{
+private:
+	int m_id{};
+
+public:
+	Simple(int id)
+		: m_id{ id }
+	{
+		std::cout << "Constructing Simple " << m_id << '\n';
+	}
+
+	~Simple() // here's our destructor
+	{
+		std::cout << "Destructing Simple " << m_id << '\n';
+	}
+
+	int getID() const { return m_id; }
+};
+//The destructor performs whatever code is contained in it whenever it is destroyed.
+//For examples like our data sending one, we can remove the need for the user to call a sendData() method by including it
+//							in with the destructor. This way, the data is sent automatically when the object is destroyed.
+//If we don't define a destructor, our object will just make an implicit one.
+//	So, if we don't necessarily need to do cleanup with our object, we can just not define one.
+//std::exit() can be sketchy to call because it doesn't destroy local variables, you stop the program without running destructors.
+
+//15.5 Class templates with member functions
+//We don't need CTAD deduction guides for non-aggregate classes. A matching constructor gives the compiler the info it needs.
+//Generally, with generic classes, we want to define member functions inside the class.
+//		If we choose to define a function outside of it, make sure to do it right below the class.
+//15.5 Q1
+
+template<typename T, typename U, typename V>
+class Triad {
+private:
+	T m_x{};
+	U m_y{};
+	V m_z{};
+
+
+public:
+	Triad(const T& x, const U& y, const V& z) : m_x{ x }, m_y{ y }, m_z{ z } {}
+
+	const T& getFirst() const { return m_x; }
+	const U& getSecond() const { return m_y; }
+	const V& getThird() const { return m_z; }
+
+	void print() const;
+};
+
+template <typename T, typename U, typename V>
+void Triad<T, U, V>::print() const {
+	std::cout << '[' << m_x << ", " << m_y << ", " << m_z << ']';
+}
+
+//15.6 Satic member variables
+//
 
 int main() {
 
+
+#if 0
+	//15.5 Q1
+	Triad<int, int, int> t1{ 1, 2, 3 };
+	t1.print();
+	std::cout << '\n';
+	std::cout << t1.getFirst() << '\n';
+
+	using namespace std::literals::string_literals;
+	const Triad t2{ 1, 2.3, "Hello"s };
+	t2.print();
+	std::cout << '\n';
+#endif
+#if 0
+	//15.4
+	Simple simple1{ 1 };
+	{
+		Simple simple2{ 2 };
+	} //Simple2 dies here, simple1 dies at the end of main.
+#endif
+
+#if 0
 	//15.3
 	Fruit apple{ Fruit::apple };
 
@@ -129,6 +208,7 @@ int main() {
 		std::cout << "I am an apple";
 	else
 		std::cout << "I am not an apple";
+#endif
 
 #if 0
 	//15.2
