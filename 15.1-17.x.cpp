@@ -80,10 +80,55 @@ void Date::print() const // print function definition
 //					in the header file. But, you make a separate .cpp file for the separate function definitions.
 
 //15.3 Nested types(member types)
+//So far we have seen class types with two types of members: data members and member functions.
+//Classes also support nested types, to define a nested type you just define the type inside of a class:
+class Fruit {
+public:
+	enum Type {
+		apple,
+		banana,
+		cherry,
+	};
+private:
+	Type m_type{};
+	int m_percentEaten{ 0 };
+public:
+	Fruit(Type type) : m_type{type}{}
+
+	Type getType() { return m_type; }
+	int getPercentEaten() { return m_percentEaten; }
+
+	bool isCherry() { return m_type == cherry; }
+};
+//Here, we have placed the nested type at the top in it's own public: space.
+//		You must fully define a nested type before you can use it elsewhere in a class, so this is required.
+//The fully qualified name for Type is: Fruit::Type, to access enumerators you do: Fruit::apple
+//Within a class, we don't need to fully qualify enumerators. We can just use cherry, not Type::cherry or Fruit::cherry
+//We can also use typedefs and type aliases in classes with similar rules to enums.
+//	typedefs and type aliases can be used outside the class they are defined in, but must be fully qualified.
+//You can also have nested classes within classes.
+
+//15.4 Intro to destructors
+//Sometimes we will have classes that are sending data as part of their functionality. Often, when using these classes,
+//				the data has to be manually sent before the class object can be destroyed.
+//There may also be some code cleanup that you want to have happen before closing a class object.
+//If we rely only on the user of these classes for doing this code cleanup it could create some issues.
+//This is what destructors are for. They are basically the opposite of constructors. These are called automatically when
+//																							some class object is destroyed.
+//Destructors have specific naming rules like constructors:
+//1. Destructor must have the same name as the class preceded by a ~.
+//2. The destructor can't have any arguments.
+//3. The destructor can't have a return type.
 
 int main() {
 
+	//15.3
+	Fruit apple{ Fruit::apple };
 
+	if (apple.getType() == Fruit::apple)
+		std::cout << "I am an apple";
+	else
+		std::cout << "I am not an apple";
 
 #if 0
 	//15.2
