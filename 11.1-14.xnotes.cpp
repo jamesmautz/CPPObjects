@@ -614,7 +614,7 @@ std::istream& operator>>(std::istream& in, MonsterType::MonsterType& monster)
 	return in;
 }
 
-//13.6 Scoped enumerationrs(enum classes)
+//13.6 Scoped enumerations(enum classes)
 //Unscoped enumerations allow you to do weird things. For example, we could compare MonsterType and Color with an if statement:
 //if(MonsterType::MonsterType == Color){} --- This will actually always evaluate to true, but doesn't make sense.
 //				As defined there is no reason for Color and MonsterType to evaluate as being equal.

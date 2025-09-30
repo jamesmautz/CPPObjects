@@ -4,6 +4,7 @@
 #include "Date.h"
 #include "Point3d.h"
 #include "Vector3d.h"
+#include "Random.h"
 
 //15.1 The hidden "this" pointer and member function chaining
 //"this" is a c++ keyword, it is how the compiler is able to tell which object should be operated on.
@@ -88,18 +89,18 @@ void Date::print() const // print function definition
 //Classes also support nested types, to define a nested type you just define the type inside of a class:
 class Fruit {
 public:
-	enum Type {
+	enum FruitType {
 		apple,
 		banana,
 		cherry,
 	};
 private:
-	Type m_type{};
+	FruitType m_type{};
 	int m_percentEaten{ 0 };
 public:
-	Fruit(Type type) : m_type{type}{}
+	Fruit(FruitType type) : m_type{type}{}
 
-	Type getType() { return m_type; }
+	FruitType getType() { return m_type; }
 	int getPercentEaten() { return m_percentEaten; }
 
 	bool isCherry() { return m_type == cherry; }
@@ -205,7 +206,7 @@ int StaticStuff::s_value{ 1 };
 //		They can be called through a class object, but generally this isn't preferred.
 //Static functions can also be defined outside the class declaration, this works like normal.
 //15.7 Q1
-class Random {
+class Random1 {
 private:
 	static std::mt19937 generate()
 	{
@@ -353,9 +354,100 @@ void Point3d::moveByVector(const Vector3d& v)
 #endif
 
 //15.10 Ref qualifiers
+//We talked a few lessons ago about how returning references to data members can be dangerous when the implicit object is an rvalue.
+//This can create issues. If we return only by lvalue, then we may have to make expensive copies frequently.
+//If we return by const reference, there is the potential to return an rvalue.
+//C++ 11 add ref qualifiers to solve this:
+//const std::string& getName() const {return m_name;} -- This version returns a reference. Which means it could return an rvalue implicit object.
+//Instad, we can ref qualify it like so:
+//	const std::string& getName() const & {return m_name;} -- & qualifer overloads function to match only lvalue implicit objects
+//	std::string getName() const && {return m_name;} -- && qualifer overloads function to match only rvalue implicit objects.
+//Essentially, this is a way to function overload and the correct version will be called depending on the case.
 
+//15.x
+
+
+class Monster {
+public:
+	enum Type {
+		dragon,
+		goblin,
+		ogre,
+		orc,
+		skeleton,
+		troll,
+		vampire,
+		zombie,
+		maxMonsterTypes,
+	};
+
+private:
+	Type m_type{};
+	std::string m_name{"?"};
+	std::string m_roar{"?"};
+	int m_hp{0};
+
+public:
+	Monster(Type type, std::string name, std::string roar, int hp)
+		: m_type{type}, m_name{name}, m_roar{roar}, m_hp{hp}
+	{ }
+
+	constexpr std::string_view getTypeString() const {
+		switch (m_type) {
+		case dragon: return "dragon";
+		case goblin: return "goblin";
+		case ogre: return "ogre";
+		case orc: return "orc";
+		case skeleton: return "skeleton";
+		case troll: return "troll";
+		case vampire: return "vampire";
+		case zombie: return "zombie";
+		default: return "???";
+		}
+	}
+
+	void print() const {
+		if (m_hp <= 0) {
+			std::cout << m_name << " the " << getTypeString() << " is dead.\n";
+		}
+		else {
+			std::cout << m_name << " the " << getTypeString() << " has " << m_hp << " hit points and says " << m_roar << ".\n";
+		}
+	}
+
+};
+
+namespace MonsterGenerator {
+	std::string getName(int x) {
+		switch (x) {
+		case 0: return "Sheldon";
+		case 1: return "Thrall";
+		case 2: return "Temarri";
+		case 3: return "Mythgor";
+		case 4: return "Shawn";
+		default: return "Lameo";
+		}
+	}
+	std::string getRoar(int x) {
+		switch (x) {
+		case 0: return "*ROAR*";
+		case 1: return "*rawr*";
+		case 2: return "*shiver*";
+		case 3: return "*crunch*";
+		case 4: return "*growl*";
+		default: return "I'm scared, please leave me alone.";
+		}
+	}
+
+	Monster generate() {
+		return Monster{ Monster::skeleton, getName(Random::get(0,5)), getRoar(Random::get(0,5)), Random::get(0,100) };
+	}
+}
 
 int main() {
+	//15.x
+	Monster m{ MonsterGenerator::generate() };
+	m.print();
 #if 0
 	//15.9 Q1/2/3
 	Point3d p{ 1.0, 2.0, 3.0 };
