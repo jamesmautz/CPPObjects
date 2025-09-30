@@ -158,6 +158,8 @@
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
     </ClCompile>
+    <ClCompile Include="Point3d.cpp" />
+    <ClCompile Include="Vector3d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Add.h" />
@@ -165,7 +167,9 @@
     <ClInclude Include="Date.h" />
     <ClInclude Include="GlobalConsts.h" />
     <ClInclude Include="NameSpaceHeaders.h" />
+    <ClInclude Include="Point3d.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="Vector3d.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

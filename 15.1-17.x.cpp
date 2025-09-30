@@ -1,5 +1,9 @@
 #include <iostream>
+#include <chrono>
+#include <random>
 #include "Date.h"
+#include "Point3d.h"
+#include "Vector3d.h"
 
 //15.1 The hidden "this" pointer and member function chaining
 //"this" is a c++ keyword, it is how the compiler is able to tell which object should be operated on.
@@ -175,10 +179,221 @@ void Triad<T, U, V>::print() const {
 }
 
 //15.6 Satic member variables
-//
+//static member variables are shared by all objects of the same class.
+struct StaticStuff {
+	static int s_value;
+	//This is allowed because the value is const.
+	static const int s_value2{ 4 };
+	//This is allowed because the value is inline.
+	static inline int s_value3{ 3 };
+	//This is allowed because the value is constexpr.
+	static constexpr double s_value4{ 2.0 };
+};
+//We have to define and initialize static members outside of the class/struct definition.
+int StaticStuff::s_value{ 1 };
+//Static members aren't associated with class objects.
+//Static members are essentially global variables that exist within the scope region of a specific class.
+//That is, when accessing a static member variable, you qualify it with the class name, not object name:
+//				Something::s_value = x;
+//If the static member is a constant integral type it can be defined within the class.
+//Inline variables can also be defined within the class.
+//Constexpr is implicitly inline, so that can be defined within the class.
+//	Generally, we should make our static variables constexpr or inline so they can be defined within the class.
+
+//15.7 Static member functions
+//You can make static member functions. These functions don't need a class object in order to be called.
+//		They can be called through a class object, but generally this isn't preferred.
+//Static functions can also be defined outside the class declaration, this works like normal.
+//15.7 Q1
+class Random {
+private:
+	static std::mt19937 generate()
+	{
+		std::random_device rd{};
+
+		// Create seed_seq with high-res clock and 7 random numbers from std::random_device
+		std::seed_seq ss{
+			static_cast<std::seed_seq::result_type>(std::chrono::steady_clock::now().time_since_epoch().count()),
+				rd(), rd(), rd(), rd(), rd(), rd(), rd() };
+
+		return std::mt19937{ ss };
+	}
+
+	static inline std::mt19937 mt{ generate() }; // generates a seeded std::mt19937 and copies it into our global object
+public:
+	// Generate a random int between [min, max] (inclusive)
+	static inline int get(int min, int max)
+	{
+		return std::uniform_int_distribution{ min, max }(mt);
+	}
+};
+
+//15.8 Friend non-member functions
+//We can use the friend keyword inside the body of a class to let the compiler know that some class/function is now a friend.
+//Friend function: a function that can access the private/protected members of a class as though it was a member of that class.
+class Accumulator {
+private:
+	int m_value{ 0 };
+public:
+	void add(int value) { m_value += value; }
+	//Here is our friend declaration.
+	friend void print(const Accumulator& accumulator);
+};
+//Since print() isn't a member function we don't need to qualify it, we can just do void print().
+void print(const Accumulator& accumulator) {
+	std::cout << accumulator.m_value;
+}
+//We could also choose to declare the friend non-member inside the class.
+//Friend functions can also be friends to multiple functions. We could include print() in another class as a friend.
+//In general, we shouuld prefer using non-friend functions. For example, if we rename m_value to value,
+//			every friend function that used m_value will have to be fixed for the renamed value.
+//	For Accumulator, we could just use a getter and have a non-friend print() function call/print the getter.
+
+//15.9 Friend classes and member functions
+//Friend Class: a class that can access the private/protected members of another class.
+//	Declared like this: friend class Display;
+class Storage
+{
+private:
+	int m_nValue{};
+	double m_dValue{};
+public:
+	Storage(int nValue, double dValue)
+		: m_nValue{ nValue }, m_dValue{ dValue }
+	{
+	}
+
+	// Make the Display class a friend of Storage
+	friend class Display;
+};
+
+class Display
+{
+private:
+	bool m_displayIntFirst{};
+
+public:
+	Display(bool displayIntFirst)
+		: m_displayIntFirst{ displayIntFirst }
+	{
+	}
+
+	// Because Display is a friend of Storage, Display members can access the private members of Storage
+	void displayStorage(const Storage& storage)
+	{
+		if (m_displayIntFirst)//Since Display is a friend class, we can access private member variables
+			std::cout << storage.m_nValue << ' ' << storage.m_dValue << '\n';
+		else // display double first
+			std::cout << storage.m_dValue << ' ' << storage.m_nValue << '\n';
+	}
+
+	void setDisplayIntFirst(bool b)
+	{
+		m_displayIntFirst = b;
+	}
+};
+//Class friendship is not transitive. If A and B are friends and B and C are friends, that doesn't mean A and C are friends.
+//You can also make specific member functions friends instead. We could alter the program above to declare a friend func:
+// In Storage: friend void Display::displayStorage(const storage& storage);
+//		This would require that Display and displayStorage are defined before Storage.
+
+//15.9 Q1/2
+#if 0
+class Point3d
+{
+private:
+	double m_x{};
+	double m_y{};
+	double m_z{};
+
+public:
+	Point3d(double x, double y, double z)
+		: m_x{ x }, m_y{ y }, m_z{ z }
+	{
+	}
+
+	void print() const
+	{
+		std::cout << "Point(" << m_x << ", " << m_y << ", " << m_z << ")\n";
+	}
+
+	void moveByVector(const Vector3d& v);
+};
+
+class Vector3d
+{
+private:
+	double m_x{};
+	double m_y{};
+	double m_z{};
+
+public:
+	Vector3d(double x, double y, double z)
+		: m_x{ x }, m_y{ y }, m_z{ z }
+	{
+	}
+
+	void print() const
+	{
+		std::cout << "Vector(" << m_x << ", " << m_y << ", " << m_z << ")\n";
+	}
+	//Used for Q2: Also had to move Point3d above Vector3d so that m_x/y/z would be accessible by moveByVector.
+	friend void Point3d::moveByVector(const Vector3d& v);
+
+	//Used for Q1:
+	//friend class Point3d;
+};
+
+void Point3d::moveByVector(const Vector3d& v)
+{
+	m_x += v.m_x;
+	m_y += v.m_y;
+	m_z += v.m_z;
+}
+#endif
+
+//15.10 Ref qualifiers
+
 
 int main() {
+#if 0
+	//15.9 Q1/2/3
+	Point3d p{ 1.0, 2.0, 3.0 };
+	Vector3d v{ 2.0, 2.0, -3.0 };
 
+	p.print();
+	p.moveByVector(v);
+	p.print();
+#endif
+
+#if 0
+	//15.9
+	Storage storage{ 5, 6.7 };
+	Display display{ false };
+
+	display.displayStorage(storage);
+
+	display.setDisplayIntFirst(true);
+	display.displayStorage(storage);
+#endif
+
+#if 0
+	//15.7 Q1
+	// Print a bunch of random numbers
+	for (int count{ 1 }; count <= 10; ++count)
+		std::cout << Random::get(1, 6) << '\t';
+
+	std::cout << '\n';
+#endif
+
+#if 0
+	//15.6
+	StaticStuff first{};
+	StaticStuff second{};
+	first.s_value = 2;
+	//Code below outputs 2 for both s_values even though s_value is only changed for first.
+	std::cout << "First: " << first.s_value << " Second: " << second.s_value;
+#endif
 
 #if 0
 	//15.5 Q1
