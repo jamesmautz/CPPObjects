@@ -512,7 +512,44 @@ void checkIndex(const std::vector<T>& arr, int index) {
 	}
 }
 
+//16.5 Returning std::vector, and an introduction to move semantics
+//We can return std::vector by value.
+//We can copy vectors by initializing a vector with another vector: std::vector arr2 {arr1};
+//			Copying vectors in this way means that if we change arr2[1], arr[1] remains unchanged.
+//			Essentially, the initial state of arr2 is identical to arr1 at the time of copy, but any changes to arr1 or
+//																	arr2 leaves the other unchanged.
+//This creates issues when returning vectors and passing those as a copy.
+//		When returning vectors you are returning a temp rvalue, this value goes away after the function is called.
+//		This means that the copied array doesn't work?
+//Instead, we need a way to steal the temporary arrays data instead of copying it.
+//This is done with "move semantics" they didn't really explain how this works, just that it does with std::vector and string.
+
+//16.6 Arrays and loops
+//Loops can be used with arrays to solve the scalability problem of arrays.
+//Templates, arrays, and loops all help to unlock/improve scalability.
+//Arrays provide a way to store lots of objects without having to name each one.
+//Loops provide a way to traverse arrays without explicitly calling each object.
+//Templates provide a way to parameterize and generalize the types of elements used(you can use templated functions on various types)
+//16.6 Q2
+template<typename T>
+void printArray(const std::vector<T>& arr) {
+	for (int i = 0; i < arr.size(); ++i) {
+		std::cout << arr[i] << " ";
+	}
+	if (arr.size() > 0) {
+		std::cout << '\n';
+	}
+}
+
 int main() {
+	//16.6 Q1
+	std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+	printArray(arr);
+	//Commented out for Q2
+	//for (int i = 0; i < arr.size(); ++i) {
+	//	std::cout << arr[i] << " ";
+	//}
+
 #if 0
 	//16.4 Q1
 	std::vector v1{ 0, 1, 2, 3, 4 };
