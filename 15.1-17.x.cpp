@@ -444,10 +444,140 @@ namespace MonsterGenerator {
 	}
 }
 
+//16.1 Intro to containers and arrays
+//Talked about arrays tons in college, I assume most of Java and C# arrays will be similar to this...
+//Containers are a data type which provides storage for a collection of unnamed objects.
+//In C++ strings are containers of chars. When we print a string, we are outputting the sequence of chars that make up a string.
+//Elements within a container are unnamed, but each type of container has ways of accessing it's contents.
+//In C++ containers are homogenous, the elements within a container must all be of the same type.
+//	Sometimes, the container type is preset(like strings with chars), but usually we can pick the type ourselves.
+//C++ has a Containers library which contains various classes that are types of containers.
+//		Containers as I am familiar with them(arrays, std::string, std::vector) are not contained in the containers library.
+//Arrays in C++ are functionally similar to Java?(contiguous, fast/easy access to elements)
+//C++ has three main types of arrays: C-style arrays, std::vector, std::array
+//std::vector is the most flexible of all the array types.
+//std::array was introduced in C++11, it is less flexible, but often more efficient in smaller sized arrays.
+//In modern applications of C++ all three array types are often used.
+
+//16.2 Intro to std::vector and list constructors
+//When initializing a vector we want to use list initialization. It tells the vector how much storage is needed,
+//					sets the length of the container, and initializes the values of the elements to the right value
+//To access elements we use '[]': primes[0] == 2 vowels[2] == 'i'
+//Make sure that when accessing elements in an array that we are staying in bounds. Calling primes[11] will crash.
+//Defining vectors with lists can be a pain if we have a larger array.
+//Defining an array with over 100 values would be very verbose. 
+//std::vector has a constructor for making a vector with a specific size:
+// std::vector<int> data(10); -- This calls the constructor and sets size to 10. data now has 10 open slots which can be assigned.
+//std::vector can be made const, but it can't be made constexpr(std::array can be made constexpr)
+
+//16.3 std::vector and the unsigned length and subscript problem
+//To get the length of an std::vector we can use the size() function(or std::size())
+//primes.size();
+//std::vector can only use .size() to get the size of itself.(We can also do sizeof() / size of each element)
+//If we want to store the value of the length in a variable we will need to static_cast<int>
+//			This is because the size() value returned is an unsigned int value.
+//int length = static_cast<int>(primes.size());
+//In C++20, we can return size as a signed integral type with std::ssize():
+//int length = std::ssize(primes);
+//Since [] doesn't check if elements are out of bounds, we can use the at() member function.
+//If we do: primes.at(9), it will throw an exception instead of having undefined behavior.
+
+//16.4 Passing std::vector
+//You can pass std::vector just like anything else in a parameter:
+//void passVector(const std::vector<int>& arr) {}
+//When passing a vector you have to explicitly state the type of array(<int>, <double>, <char>, etc.)
+//If we want a function to take in different types of vectors we need to use a function template.
+template <typename T>
+void passVector(const std::vector<T>& arr) {
+	std::cout << arr[0] << '\n';
+}
+//We could also do:
+void passVector(const auto& arr) {
+	std::cout << arr[0] << '\n';
+}
+//This function will be usable on any compileable type(also std::string or std::string_view, etc.)
+//		It can be very useful when looking for a function that can be used with various different types.
+//However, this version can lead to bugs if the user tries to pass an object of a type that compiles but doesn't make sense.
+//When passing arrays, we need to be careful and ensure that the user doesn't pass an array which will be out of bounds:
+//if we print the third element of an array as part of a function, but the array passed only has 2 elements it will be out of bounds.
+//		This will lead to undefined behavior. To solve this, we should assert on arr.size()
+//16.4 Q1
+template <typename T>
+void checkIndex(const std::vector<T>& arr, int index) {
+	if (index >= arr.size() || index < 0) {
+		std::cout << "Invalid index.\n";
+	}
+	else {
+		std::cout << "The element has value: " << arr[index] << '\n';
+	}
+}
+
 int main() {
+#if 0
+	//16.4 Q1
+	std::vector v1{ 0, 1, 2, 3, 4 };
+	checkIndex(v1, 2);
+	checkIndex(v1, 5);
+
+	std::vector v2{ 1.1, 2.2, 3.3 };
+	checkIndex(v2, 0);
+	checkIndex(v2, -1);
+
+	//16.4
+	std::vector ints{ 1, 2, 3, 4, 5 };
+	passVector<int>(ints);
+
+	std::vector doubles{ 1.2, 3.4, 5.6 };
+	passVector<double>(doubles);
+#endif
+
+#if 0
+	//16.3 Q1
+	std::vector hello{ 'h', 'e', 'l', 'l', 'o' };
+	std::cout << "The array has " << std::size(hello) << " elements.\n";
+	std::cout << hello[1];
+	std::cout << hello.at(1);
+
+	//16.3
+	std::vector primes{ 1, 2, 3, 5, 7, 11 };
+	int length = std::ssize(primes);
+	std::cout << "Length: " << length << '\n';
+#endif
+
+#if 0
+	//16.2 Q1
+	std::vector squares{ 1, 4, 9, 16, 25 };
+	//16.2 Q3
+	std::vector<int> highTemps(365);
+	//16.2 Q4
+	std::vector<int> userInput(3);
+	std::cout << "Enter 3 integers(separated by a space): ";
+	std::cin >> userInput[0] >> userInput[1] >> userInput[2];
+	std::cout << "The sum is: " << userInput[0] + userInput[1] + userInput[2] << '\n';
+	std::cout << "The product is: " << userInput[0] * userInput[1] * userInput[2] << '\n';
+#endif
+
+#if 0
+	//16.2
+	std::vector<int> empty{}; //Instantiation of an empty vector for int types.
+	std::vector<int> primes{ 2, 3, 5, 7, 11 };
+	std::vector vowels{ 'a', 'e', 'i', 'o', 'u' };
+	//std::cout << "The first prime number is: " << primes[0] << '\n';
+	//std::cout << "The second prime number is: " << primes[1] << '\n';
+	//std::cout << "The sum of the first 5 primes is: " << primes[0] + primes[1] + primes[2] + primes[3] + primes[4] << '\n';
+	//Shows that array elements are stored contiguously in memory:
+	//Each element shoulud be separated by 4 bytes. If primes[0] address ends with a 0, primes[1] address ends with a 4.
+	std::cout << "An int is " << sizeof(int) << " bytes\n";
+	std::cout << &(primes[0]) << '\n';
+	std::cout << &(primes[1]) << '\n';
+	std::cout << &(primes[2]) << '\n';
+#endif
+
+#if 0
 	//15.x
 	Monster m{ MonsterGenerator::generate() };
 	m.print();
+#endif
 #if 0
 	//15.9 Q1/2/3
 	Point3d p{ 1.0, 2.0, 3.0 };
