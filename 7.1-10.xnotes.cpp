@@ -14,7 +14,7 @@
 #include <string>
 #include <string_view>
 
-
+#if 0
 #if 0
 //INLINE AND UNNAMED NAMESPACE CODE:
 //Using inline namespaces allows for a form of versioning. Allows easier changes to namespace functions.
@@ -287,6 +287,7 @@ void hilo(int low, int high, int guesses)
 #endif
 //9.x Q1 Functions:
 //This function ignores invalid information in user inputs.
+
 void ignoreLine()
 {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -733,7 +734,7 @@ NotNegative:
     //Prints 0
     std::cout << x << '\n';
 #endif
-
+#endif
     return 0;
 }
 #endif

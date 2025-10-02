@@ -541,15 +541,102 @@ void printArray(const std::vector<T>& arr) {
 	}
 }
 
+//16.6 Q3
+void ignoreLine()
+{
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+int getUserInt()
+{
+	while (true)
+	{
+		int input;
+		std::cin >> input;
+
+		if (!std::cin)
+		{
+			std::cin.clear();
+			ignoreLine();
+			std::cout << "Please enter a valid guess: ";
+			continue;
+		}
+		if (input > 9 || input < 0) {
+			std::cin.clear();
+			ignoreLine();
+			std::cout << "Please enter number between 1 and 9: ";
+			continue;
+		}
+
+		//If extraction succeeds:
+		ignoreLine();
+		return input;
+	}
+}
+template<typename T>
+void guessingGame(const std::vector<T>& arr) {
+	std::cout << "Enter a number between 1 and 9: ";
+	int input = getUserInt();
+
+	printArray(arr);
+
+	int index = -1;
+	for (int i = 0; i < arr.size(); ++i) {
+		if (arr[i] == input) {
+			index = i;
+			break;
+		}
+	}
+	if (index < 0) {
+		std::cout << "The number " << input << " was not found.\n";
+	}
+	else {
+		std::cout << "The number " << input << " has index " << index << ".\n";
+	}
+}
+//16.6 Q4
+template<typename T>
+T findMax(const std::vector<T>& arr) {
+	if (arr.size() == 0) {
+		return T{};
+	}
+
+	T max = arr[0];
+	for (int i = 1; i < arr.size(); ++i) {
+		if (arr[i] > max) {
+			max = arr[i];
+		}
+	}
+	return max;
+}
+
+//16.7 Arrays, loops, and sign challenge solutions
+//
+
 int main() {
-	//16.6 Q1
+#if 0
+	//16.6 Q4
+	std::vector data1{ 84, 92, 76, 81, 56 };
+	std::cout << findMax(data1) << '\n';
+
+	std::vector data2{ -13.0, -26.7, -105.5, -14.8 };
+	std::cout << findMax(data2) << '\n';
+
+	std::vector<int> data3{ };
+	std::cout << findMax(data3) << '\n';
+
+
+	//16.6 Q3
 	std::vector arr{ 4, 6, 7, 3, 8, 2, 1, 9 };
+	guessingGame(arr);
+
+	//16.6 Q1
 	printArray(arr);
 	//Commented out for Q2
 	//for (int i = 0; i < arr.size(); ++i) {
 	//	std::cout << arr[i] << " ";
 	//}
-
+#endif
 #if 0
 	//16.4 Q1
 	std::vector v1{ 0, 1, 2, 3, 4 };
