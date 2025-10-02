@@ -611,6 +611,12 @@ T findMax(const std::vector<T>& arr) {
 }
 
 //16.7 Arrays, loops, and sign challenge solutions
+//This whole section was a shitshow. I'm not really sure what it's trying to teach. Seems like they are making arrays harder than they need to?
+//it essentially wants us to set up loops like this: for(std::size_t i{0}; i < arr.size(); ++i}
+//			IDK why we can't just do i = 0;
+//			It also said to avoid using i within loops but that seems dumb.
+
+//16.8 Range-based for loops(for-each loops)
 //
 
 int main() {
