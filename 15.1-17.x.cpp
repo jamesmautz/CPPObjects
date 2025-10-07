@@ -713,11 +713,149 @@ std::string_view getAnimal(Animals::Types animal) {
 }
 
 //16.10 vector resizing and capacity
+//Unlike normal arrays, vectors are dynamic(they can re-size).
+//We can resize a vector after instantiation with the .resize() function.
+//In the resize() call we can put our new desired size.
+//As shown in main(), when resized the order and placement of orignal values is retained.
+//New values added after the resize are 0 initialized.(in the case of main: index 3 and 4 are given value 0.)
+//You can also use resize() to make vectors smaller, this will retain order and placement, but will delete any values at a larger index.
+//With std::vector up to this point we have only talked about length(the number of occupied indices.)
+//Another factor to consider is capacity(how many totally indices have storage allocated for them.)
+//We can get the capacity of a vector with the .capcity() function.
+void printCapLen(const std::vector<int>& v)
+{
+	std::cout << "Capacity: " << v.capacity() << " Length:" << v.size() << '\n';
+}
+//Every time we resize an array, memory has to be reallocated for the new size. This is a very espenxive process.
+//This is part of why capacity is useful. If you have a larger capacity than what is being used, you don't have to
+//				reallocate memory as often.
+//For ex. when we resize an array to a smaller size, the capacity doesn't decrease. Instead, it leaves the old
+//							available spaces open. Then, when resizing to the old size no reallocation is needed.
+//Vector indexing is based on length not capacity. Thus, we can have capcity of 5 but length of 3 and index 4 will cause an error.
+//Sometimes with larger arrays we may want capacity to shrink with length. In such cases we should use the:
+//				shrink_to_fit() function. This function shrinks the capacity with the length to the parameterized value.
+//				This function is non-binding, which means the compiler can ignore the capacity match if it wants.
+
+//16.11 std::vector and stack behavior
+//We talk lots about stacks in college. FILO data structure, uses push() and pop() to place new elements or remove.
+//Because of how stacks are implemented in C++ vectors can actually be used as a stack in addition to their own capabilities as an array.
+//This means we can push and pop a vector?!
+//push_back() == push --- puts a new element on top of the stack
+//pop_back() == pop --- removes the top element from a stack
+//back() == peek --- gets the top element on the stack
+//emplace_back() --- alternate version of push_back(), this can be more efficient
+void printStack(const std::vector<int>& stack)
+{
+	if (stack.empty()) // if stack.size == 0
+		std::cout << "Empty";
+
+	for (auto element : stack)
+		std::cout << element << ' ';
+
+	// \t is a tab character, to help align the text
+	std::cout << "\tCapacity: " << stack.capacity() << "  Length " << stack.size() << "\n";
+}
+//push_back and emplace_back will cause reallocation to occur if capacity is reached.
+//We can't use the resize() function or create a pre-made vector with extra space to solve this issue.
+//			Because stacks place new elements on top, they will just add one extra element on top of 
+//														the 0 initialized items already in a vector.
+//Instead, we can use the reserve() member function to reserve a specific capacity but not change length.
+//emplace_back is preferable to use if we are using a temporary object to push onto a stack.
+//If the object being pushed already exists then we should use push_back.
+//emplace_back forwards the inputted arguments into a constructor and has that make it.
+//If we do the same thing with push_back we have to make and copy a temporary object.
+//stack.push_back({"a", 2}) vs. emplace_back("a", 2)
+void printStackVals(const std::vector<int>& stack) {
+	std::cout << "\t(Stack: ";
+	if (stack.empty())
+		std::cout << "empty";
+	for (auto element : stack) {
+		std::cout << element << ' ';
+	}
+	std::cout << ")\n";
+}
+
+void popPrint(std::vector<int>& stack) {
+	std::cout << "Pop";
+	stack.pop_back();
+	printStackVals(stack);
+}
+
+void pushPrint(std::vector<int>& stack, int val) {
+	std::cout << "Push " << val;
+	stack.push_back(val);
+	printStackVals(stack);
+}
+
+//16.12 std::vector<bool>
 //
 
 int main() {
 #if 1
+	//16.12
+
+#endif
+
+#if 0
+	//16.11 Q1
+	std::vector<int> quizStack{};
+	printStackVals(quizStack);
+
+	pushPrint(quizStack, 1);
+	pushPrint(quizStack, 2);
+	pushPrint(quizStack, 3);
+	popPrint(quizStack);
+	pushPrint(quizStack, 4);
+	popPrint(quizStack);
+	popPrint(quizStack);
+	popPrint(quizStack);
+
+	//16.11
+	std::vector<int> stack{}; // empty stack
+
+	printStack(stack);
+
+	stack.reserve(6); //Added line to reserve 6 spots for elements. Retains normal stack functionality.
+	printStack(stack);
+
+	stack.push_back(1); // push_back() pushes an element on the stack
+	printStack(stack);
+
+	stack.push_back(2);
+	printStack(stack);
+
+	stack.push_back(3);
+	printStack(stack);
+
+	std::cout << "Top: " << stack.back() << '\n'; // back() returns the last element
+
+	stack.pop_back(); // pop_back() pops an element off the stack
+	printStack(stack);
+
+	stack.pop_back();
+	printStack(stack);
+
+	stack.pop_back();
+	printStack(stack);
+#endif
+
+#if 0
 	//16.10
+	std::vector v{ 0, 1, 2 }; // length is initially 3
+
+	printCapLen(v);
+
+	for (auto i : v)
+		std::cout << i << ' ';
+	std::cout << '\n';
+
+	v.resize(5); // resize to 5 elements
+
+	printCapLen(v);
+
+	for (auto i : v)
+		std::cout << i << ' ';
+	std::cout << '\n';
 #endif
 
 #if 0
