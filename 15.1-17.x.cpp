@@ -5,6 +5,7 @@
 #include "Point3d.h"
 #include "Vector3d.h"
 #include "Random.h"
+#include <ranges>
 
 //15.1 The hidden "this" pointer and member function chaining
 //"this" is a c++ keyword, it is how the compiler is able to tell which object should be operated on.
@@ -614,12 +615,87 @@ T findMax(const std::vector<T>& arr) {
 //This whole section was a shitshow. I'm not really sure what it's trying to teach. Seems like they are making arrays harder than they need to?
 //it essentially wants us to set up loops like this: for(std::size_t i{0}; i < arr.size(); ++i}
 //			IDK why we can't just do i = 0;
+//			Coming back after a bit of a break. std::size_t for keeping track of index makes some sense.
+//				I should use std::size_t because it helps the code to be more portable to 32 or 64 bit systems.
+//				In addition, std::size_t doesn't have a maximum number like int, short, or long does.
+//				This can allow more flexibility with loops and prevents us going too large for a variable type like int.
 //			It also said to avoid using i within loops but that seems dumb.
+//				I still think this is dumb after a few days.
 
 //16.8 Range-based for loops(for-each loops)
-//
+//For loops can cause some user errors that are pretty easy to find.
+//		Stuff like off by one errors, indexing issues, etc...
+//As a result, a for-each loop can be useful, which iterates through each element in a given collection.
+//Structured like this: for(element_declaration : array_object) {function_body;}
+//element_declaration should use the same type as the array elements.
+//If you run a for each loop on an empty array, the loop is just skipped.
+//A very useful thing for for each loops is the auto type.
+//You can use the auto type for the element declaration and have the compiler deduce the array element used.
+//This can help to avoid user error(and could help to make generic loops for function templates?)
+//With more expensive types like std::string, every loop will make a copy if structured as we did in the fibonacci example in main.
+//Instead, we should use a const reference:
+void printStrArr(std::vector<std::string> arr) {
+	for (const std::string& str : arr) {
+		std::cout << str << ' ';
+	}
+	std::cout << '\n';
+}
+//Often with an array we will want to modify elements, in such cases we should just use a non-const reference.
+//Just like java, we can use for each loops with various container classes(linked lists, maps, arrays, etc...)
+//Generally, for each loops can only iterate forwards through an array. In C++20 we can go backwards like so:
+template<typename T>
+void printArrBackwards(std::vector<T> arr) {
+	for (const auto& item : std::views::reverse(arr)) {
+		std::cout << item << ' ';
+	}
+	std::cout << '\n';
+}
+//16.8 Q1/Q2
+template<typename T>
+bool isValueInArray(std::vector<T> arr, T value) {
+	for (T item : arr) {
+		if (item == value) {
+			return true;
+		}
+	}
+	return false;
+}
+
+//16.9 Array indexing and length using enumerators.
 
 int main() {
+#if 1
+	//16.9
+#endif
+
+#if 0
+	//16.8 Q1/Q2
+	std::vector<std::string> names{ "Alex", "Betty", "Caroline", "Dave", "Emily", "Fred", "Greg", "Holly" };
+	std::cout << "Enter a name: ";
+	std::string str{};
+	std::cin >> str;
+	if (isValueInArray(names, str)) {
+		std::cout << str << " was found.\n";
+	}
+	else {
+		std::cout << str << " was not found.\n";
+	}
+#endif
+
+#if 0
+	//16.8
+	printStrArr(std::vector<std::string> {"orange", "apple", "lemon"});
+	printStrArr(std::vector<std::string> {});//Just prints a new line because it's an empty array.
+	printArrBackwards(std::vector<std::string> {"orange", "apple", "lemon"});
+	printArrBackwards(std::vector<int> {1, 2, 3});
+
+	std::vector fibonacci{ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+	for (int num : fibonacci) {
+		std::cout << num << ' ';
+	}
+	std::cout << '\n';
+#endif
+
 #if 0
 	//16.6 Q4
 	std::vector data1{ 84, 92, 76, 81, 56 };
