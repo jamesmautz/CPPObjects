@@ -6,6 +6,7 @@
 #include "Vector3d.h"
 #include "Random.h"
 #include <ranges>
+#include <cassert>
 
 //15.1 The hidden "this" pointer and member function chaining
 //"this" is a c++ keyword, it is how the compiler is able to tell which object should be operated on.
@@ -662,10 +663,73 @@ bool isValueInArray(std::vector<T> arr, T value) {
 }
 
 //16.9 Array indexing and length using enumerators.
+//Consider an array of test scores: testScores {66, 72, 88, 64, 99, 100}
+//These test scores are nicely contained within an array, but we don't have a method to actually assign them to a student.
+//A solution to this problem is to use unscoped enumerations
+//We can use unscoped enumerations because they implicitly convert to size_t, so the first enumerator has index 0, and can match with index 0 of an arr
+//Doing this can help to elucidate the meaning of specific elements within an array.
+namespace Students {
+	enum Names : unsigned int{ //we explicitly make this unsigned int so that conversion to size_t isn't narrowing.
+		kenny, // 0
+		kyle, // 1
+		stan, // 2
+		butters, // 3
+		cartman, // 4
+		max_students, // 5
+	};
+}
+//Note: the max_students enumerator isn't actually a student. Instead, it keep tracks of the count of enumerators in an enum.
+//	max_students is a count enumerator, if using default values(and placed at the bottom) it keeps track of the number of elements
+//						in an enum ---- not above that we have 5 students, and max_students has value: 5.
+//We can use this value to instantiate vectors with the correct number of students, or we can use it to print the total number of students.
+//Generally, we don't initialize arrays like this, we can use an assert to make sure that our list initialized array matches
+//													the total number of students:
+//													assert(std::size(testScores) == Students::max_students);
+//16.9 Q1
+namespace Animals {
+	enum Types : unsigned int {
+		chicken,
+		dog,
+		cat,
+		elephant,
+		duck,
+		snake,
+		max_types,
+	};
+
+	const std::vector legs{ 2, 4, 4, 4, 2, 0 };
+}
+
+std::string_view getAnimal(Animals::Types animal) {
+	switch (animal) {
+	case Animals::chicken: return "chicken";
+	case Animals::dog: return "dog";
+	case Animals::cat: return "cat";
+	case Animals::elephant: return "elephant";
+	case Animals::duck: return "duck";
+	case Animals::snake: return "snake";
+	default: return "???";
+	}
+}
+
+//16.10 vector resizing and capacity
+//
 
 int main() {
 #if 1
+	//16.10
+#endif
+
+#if 0
+	//16.9 Q1
+	assert(Animals::max_types == Animals::legs.size());
+
+	std::cout << "A " << getAnimal(Animals::dog) << " has " << Animals::legs[Animals::dog] << " legs.\n";
+
 	//16.9
+	std::vector<int> testScores(Students::max_students);
+	//Each element in the array is now empty, we can assign values like so:
+	testScores[Students::stan] = 76; // sets stans score to 76.
 #endif
 
 #if 0
