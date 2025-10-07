@@ -788,12 +788,137 @@ void pushPrint(std::vector<int>& stack, int val) {
 }
 
 //16.12 std::vector<bool>
-//
+//In O.1 we talked about bit manipulation where we can shove 8 bool values into a single bit with bit manipulation.
+//std::vector<bool> can provide us with some similar functionality, although without bit manipulation member functions
+//std::vector<bool> works like any other vector for the most part.
+//There are some significant tradeoffs:
+//std::vector<bool> has a lot of overhead, so memory won't be saved unless you are allocating more bool values 
+//											than the overhead for your architecture.
+//std::vector<bool>'s performance is very dependant on the implementation. If highly optimized it can own, if not it sucks.
+//Finally, std::vector<bool> is not a vector, the values aren't contiguously held in memory, and isn't technically a container.
+//This means that while it is a vector, it isn't compatible with the full functionality of the standard library.
+//As a result of these issues, we should avoid std::vector<bool>, if we wanna do bit manipulation don't use a vector.
+
+//16.x Q2
+namespace Items {
+	enum Types {
+		health_potion,
+		torch,
+		arrow,
+		max_value,
+	};
+}
+
+std::string_view getItemName(Items::Types type) {
+	switch (type) {
+	case Items::health_potion: return "health potion";
+	case Items::torch: return "torch";
+	case Items::arrow: return "arrow";
+	default: return "???";
+	}
+}
+
+void printSpecifics(const std::vector<int>& arr) {
+	std::size_t length{ arr.size() };
+
+	for (std::size_t i{ 0 }; i < length; ++i) {
+		std::string name{ getItemName(static_cast<Items::Types>(i)) };
+
+		std::cout << "You have " << arr[i] << ' ' << name;
+
+		if (arr[i] != 1) {
+			if (name == "torch")
+				std::cout << "es";
+			else
+				std::cout << 's';
+		}
+		std::cout << " in your inventory.\n";
+	}
+}
+
+int countInventory(const std::vector<int>& arr) {
+	int total = 0;
+	for (auto count : arr) {
+		total += count;
+	}
+	return total;
+}
+
+//16.x Q3 --- Also used in Q4
+template<typename T>
+std::pair<int, int> returnPair(const std::vector<T>& arr) {
+	int minIndex{ 0 };
+	int maxIndex{ 0 };
+	std::cout << "With array (" << arr[0] << ", ";
+	std::size_t length{ arr.size() };
+	for (std::size_t i{ 1 }; i < length; ++i) {
+		if (arr[i] < arr[minIndex]) {
+			minIndex = i;
+		}
+		if (arr[i] > arr[maxIndex]) {
+			maxIndex = i;
+		}
+		if (i == length - 1) {
+			std::cout << arr[i] << ' ';
+			break;
+		}
+		std::cout << arr[i] << ", ";
+	}
+	std::cout << "):\n";
+	return std::pair{ minIndex, maxIndex };
+}
+
+//16.x Q5
+//IM COMING BACK TO THIS LATER ITS A HUGE PROBLEM WILL BE GOOD FOR A VECTOR REFRESHER DOWN THE LINE
+
 
 int main() {
-#if 1
-	//16.12
+	//16.x Q4
+	std::vector<int> vector{ };
+	std::cout << "Enter numbers to add (use -1 to stop): ";
 
+	while (true) {
+		int input{};
+		std::cin >> input;
+
+		if (input == -1)
+			break;
+
+		if (!std::cin) {
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
+		}
+		vector.push_back(input);
+	}
+
+	if (vector.size() == 0) {
+		std::cout << "Empty array.";
+	}
+	else {
+		std::pair<int, int> pair{ returnPair(vector) };
+		std::cout << "The min element has index " << pair.first << " and value " << vector[pair.first] << '\n';
+		std::cout << "The max element has index " << pair.second << " and value " << vector[pair.second] << '\n';
+	}
+
+#if 0
+	//16.xQ3
+	std::vector v1{ 3, 8, 2, 5, 7, 8, 3 };
+	std::pair<int, int> pair1{ returnPair(v1)};
+	std::cout << "The min element has index " << pair1.first << " and value " << v1[pair1.first] << '\n';
+	std::cout << "The max element has index " << pair1.second << " and value " << v1[pair1.second] << '\n';
+
+	std::vector v2{ 5.5, 2.7, 3.3, 7.6, 1.2, 8.8, 6.6 };
+	std::pair<int, int> pair2{ returnPair(v2) };
+	std::cout << "The min element has index " << pair2.first << " and value " << v2[pair2.first] << '\n';
+	std::cout << "The max element has index " << pair2.second << " and value " << v2[pair2.second] << '\n';
+
+
+	//16.x Q2:
+	std::vector<int> inventory{ 1, 5, 10 };
+	assert(inventory.size() == Items::max_value);
+	printSpecifics(inventory);
+	std::cout << "You have " << countInventory(inventory) << " total items\n";
 #endif
 
 #if 0
