@@ -5,6 +5,7 @@
 #include <cassert>
 #include <vector> //used for std::vector
 #include <array> //used for std::array
+#include <functional> //used for std::reference_wrapper
 
 #include "Date.h"
 #include "Point3d.h"
@@ -898,7 +899,84 @@ std::pair<int, int> returnPair(const std::vector<T>& arr) {
 //The length of an std::array is a constexpr value, which means that we can use .size(), std::size(), and std::ssize() in constexpr.
 //To get compile time bounds checking we can use the std::get() function(shown in main
 
+//17.3 Passing and returning std::array
+//Like vectors. pass by reference(const if we don't want to change)
+//Like vectors. we can return by value.
+//Sometimes, this can be very expensive, so you want to return an array by out parameter.
+//		In these cases, the user is required to supply an array for return.
+//		In general, though, we should try to return std::vectors, if we are returning a std::array it probably isn't constexpr.
+//								and making copies of std::vector is less expensive than std::array.
+template<typename T, std::size_t N>
+void printArray(const std::array<T, N>& arr) {
+	std::cout << "The array (";
+
+	int length = arr.size();
+	for (std::size_t i = 0; i < length; ++i) {
+		if (i == length - 1) { //Checks if we are on the last index.
+			std::cout << arr[i] << ") ";
+			break;
+		}
+		std::cout << arr[i] << ", ";
+	}
+
+	std::cout << "has length " << length << '\n';
+}
+
+//17.4 std::array of class types, and brace elision
+//std::arrays aren't limited to basic types, we can also use user defined classes/structs
+//When list initializing a struct we may be required to use double braces: {{ House{1}, House{2}, ...}}
+struct Item {
+	std::string_view name{};
+	int gold;
+};
+
+//17.5 Arrays of references via std::reference_wrapper
+//std::reference_wrapper is a standard library that takes a template argument and behaves like an lvalue reference to an object of type T
+//We can use std::reference_wrapper to create an array of references to objects.
+//Important notes:
+//Operator= is used to reseat a std::reference_wrapper(change which object is being referenced)
+//std::reference_wrapper<T> implicitly converts to T&
+//get() can be used to get a T&, this is useful to update the object being referenced.
+
+//17.6 std::array and enumerations
+//
+
 int main() {
+#if 1
+	//17.6
+#endif
+
+#if 0
+	//17.5
+	int x{ 1 }; int y{ 2 }; int z{ 3 };
+
+	std::array<std::reference_wrapper<int>, 3> arr{ x, y, z };
+	arr[1].get() = 5; //updates the value of the reference, doesn't update what is being referenced.
+	std::cout << arr[1] << y << '\n';
+	int a{ 4 };
+	arr[1] = a;
+	std::cout << "Array: " << arr[1] << " a: " << a << " y: " << y << '\n';
+#endif
+
+#if 0
+	//17.4 Q1
+	//constexpr std::array items{ Item{"sword", 5}, Item{"dagger", 3}, Item{"club", 2}, Item{"spear", 7}};
+	//17.4 Q2 --- Updated to not use CTAD, which requires brace elision
+	constexpr std::array<Item, 4> items{ { {"sword", 5}, {"dagger", 3}, {"club", 2}, {"spear", 7} } };
+	for (auto& i : items) {
+		std::cout << "A " << i.name << " costs " << i.gold << ".\n";
+	}
+#endif
+
+#if 0
+	//17.3 Q1
+	constexpr std::array arr1{ 1, 4, 9, 16 };
+	printArray(arr1);
+
+	constexpr std::array arr2{ 'h', 'e', 'l', 'l', 'o' };
+	printArray(arr2);
+#endif
+
 #if 0
 	//17.2 Q1
 	std::array<char, 5> hello{ 'h', 'e', 'l', 'l', 'o' };
