@@ -1,12 +1,16 @@
 #include <iostream>
 #include <chrono>
 #include <random>
+#include <ranges>
+#include <cassert>
+#include <vector> //used for std::vector
+#include <array> //used for std::array
+
 #include "Date.h"
 #include "Point3d.h"
 #include "Vector3d.h"
 #include "Random.h"
-#include <ranges>
-#include <cassert>
+
 
 //15.1 The hidden "this" pointer and member function chaining
 //"this" is a c++ keyword, it is how the compiler is able to tell which object should be operated on.
@@ -871,8 +875,51 @@ std::pair<int, int> returnPair(const std::vector<T>& arr) {
 //16.x Q5
 //IM COMING BACK TO THIS LATER ITS A HUGE PROBLEM WILL BE GOOD FOR A VECTOR REFRESHER DOWN THE LINE
 
+//17.1 Intro to std::array
+//std::array and C style arrays are fixed-size.
+//We may choose to still use these despite the obvious downsides because they can be more performant than dynamic arrays.
+//	Additionally, std::array can be constexpr, while std::vector can only support constexpr in limited contexts.
+//Array definition: std::array<int, 5> a{}; vs. std::vector<int> b(5);
+//	This creates an array of type int with 5 available slots.
+//The length of a std::array must be a constexpr.
+//std::array is an aggregate(which means it has no constructor) -- so we can use list initialization.
+//When using list initialization, the list is added in sequence.
+//std::array can be both const and constexpr.
+//elements in a const array are treated as const even if not specifically labelled.
+//We can initialize arrays with CTAD(ignore <int, size>): constexpr std::array a {6, 5, 4, 3, 2, 1};
+//															array a created with size 6 and type int.
+
+//17.2 std::array length and indexing
+//similar to other standard library containers the size variable is type size_t(an unsigned integral type)
+//	This means that we have similar issues for getting and using size with both std::array and std::vector
+//To get array size we can use the .size() member function like vector. This returns a size_type type.
+//	We can also use std::size: std::size(arr); -- but this just calls the arr.size() function.
+//	Finally we can use std::ssize: std::ssize(arr); -- this returns a signed integral type.
+//The length of an std::array is a constexpr value, which means that we can use .size(), std::size(), and std::ssize() in constexpr.
+//To get compile time bounds checking we can use the std::get() function(shown in main
 
 int main() {
+#if 0
+	//17.2 Q1
+	std::array<char, 5> hello{ 'h', 'e', 'l', 'l', 'o' };
+	std::cout << "The length is " << hello.size() << '\n';
+	std::cout << hello[1] << hello.at(1) << std::get<1>(hello);
+
+	//17.2
+	constexpr std::array prime{ 2, 3, 5, 7, 11 };
+
+	std::cout << std::get<3>(prime); //print the value of element with index 3
+	//std::cout << std::get<9>(prime); //compile error because there is no index 9
+#endif
+
+#if 0
+	//17.1
+	std::array<int, 5> arr{ 0, 1, 2, 3, 4 };
+	std::array<char, 5> hello1{ 'h', 'e', 'l', 'l', 'o' };
+	std::cout << hello1[1];
+#endif
+
+#if 0
 	//16.x Q4
 	std::vector<int> vector{ };
 	std::cout << "Enter numbers to add (use -1 to stop): ";
@@ -901,7 +948,7 @@ int main() {
 		std::cout << "The max element has index " << pair.second << " and value " << vector[pair.second] << '\n';
 	}
 
-#if 0
+
 	//16.xQ3
 	std::vector v1{ 3, 8, 2, 5, 7, 8, 3 };
 	std::pair<int, int> pair1{ returnPair(v1)};
