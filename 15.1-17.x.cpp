@@ -6,6 +6,8 @@
 #include <vector> //used for std::vector
 #include <array> //used for std::array
 #include <functional> //used for std::reference_wrapper
+#include <string>
+#include <string_view>
 
 #include "Date.h"
 #include "Point3d.h"
@@ -939,11 +941,167 @@ struct Item {
 //get() can be used to get a T&, this is useful to update the object being referenced.
 
 //17.6 std::array and enumerations
-//
+//Up this point we have been making two functions to handle conversion from enumerator to string and vice versa.
+//	These functions aren't bad, but they do mean that if we add a new enumerator we have to remember to change these functions.
+//Instead, we can use an std::array to hold string versions of each enumerator.
+namespace Color {
+	enum Type {
+		black,
+		red,
+		blue,
+		max_colors
+	};
+
+	using namespace std::string_view_literals;
+	constexpr std::array colorName{ "black"sv, "red"sv, "blue"sv };
+
+	static_assert(std::size(colorName) == max_colors);
+}
+
+constexpr std::string_view getColorName(Color::Type color) {
+	return Color::colorName[static_cast<std::size_t>(color)]; //index the array using the enumerator.
+}
+/// <summary>
+/// Teaches the operator<< how to print a color using the getColorName function.
+/// </summary>
+/// <param name="out">std::cout</param>
+/// <param name="color">the color being returned as a string_view</param>
+/// <returns>A printed line to the console with the correct color.</returns>
+std::ostream& operator<<(std::ostream& out, Color::Type color) {
+	return out << getColorName(color);
+}
+
+// Teach operator>> how to input a Color by name
+// We pass color by non-const reference so we can have the function modify its value
+std::istream& operator>> (std::istream& in, Color::Type& color)
+{
+	std::string input{};
+	std::getline(in >> std::ws, input);
+
+	// Iterate through the list of names to see if we can find a matching name
+	for (std::size_t index = 0; index < Color::colorName.size(); ++index)
+	{
+		if (input == Color::colorName[index])
+		{
+			// If we found a matching name, we can get the enumerator value based on its index
+			color = static_cast<Color::Type>(index);
+			return in;
+		}
+	}
+
+	// We didn't find a match, so input must have been invalid
+	// so we will set input stream to fail state
+	in.setstate(std::ios_base::failbit);
+
+	// On an extraction failure, operator>> zero-initializes fundamental types
+	// Uncomment the following line to make this operator do the same thing
+	// color = {};
+	return in;
+}
+
+//Another issue with enumerators is that you can't use a range-based for loop to loop through them.
+//	std::arrays can also solve this issue. By creating an array for each enum you can loop through with a range-based loop.
+
+//17.6 Q1
+namespace Animal {
+	enum Type {
+		chicken,
+		dog,
+		cat,
+		elephant,
+		duck,
+		snake,
+		max_animals,
+	};
+
+	struct Data {
+		std::string_view name{};
+		int legs{};
+		std::string_view sound{};
+	};
+
+	constexpr std::array types{ chicken, dog, cat, elephant, duck, snake };
+
+	using namespace std::string_view_literals;
+	constexpr std::array data{ Data{"chicken"sv, 2, "cluck"sv}, Data{"dog"sv, 4, "woof"sv}, Data{"cat"sv, 4, "meow"sv},
+							Data{"elephant"sv, 4, "pawoo"sv}, Data{"duck"sv, 2, "quack"sv}, Data{"snake"sv, 0, "hiss"sv}};
+
+	static_assert(std::size(types) == max_animals);
+	static_assert(std::size(data) == max_animals);
+}
+
+// Teach operator>> how to input a Color by name
+// We pass color by non-const reference so we can have the function modify its value
+std::istream& operator>> (std::istream& in, Animal::Type& animal)
+{
+	std::string input{};
+	std::getline(in >> std::ws, input);
+
+	// Iterate through the list of names to see if we can find a matching name
+	for (std::size_t index = 0; index < Animal::data.size(); ++index)
+	{
+		if (input == Animal::data[index].name)
+		{
+			// If we found a matching name, we can get the enumerator value based on its index
+			animal = static_cast<Animal::Type>(index);
+			return in;
+		}
+	}
+
+	// We didn't find a match, so input must have been invalid
+	// so we will set input stream to fail state
+	in.setstate(std::ios_base::failbit);
+
+	// On an extraction failure, operator>> zero-initializes fundamental types
+	// Uncomment the following line to make this operator do the same thing
+	// color = {};
+	return in;
+}
+
+void printAnimal(Animal::Type type) {
+	const Animal::Data& animal{ Animal::data[type] };
+	std::cout << "A " << animal.name << " has " << animal.legs << " legs and says " << animal.sound << ".\n";
+}
 
 int main() {
 #if 1
+	//17.6 Q1
+	std::cout << "Enter an animal: ";
+	Animal::Type type{};
+	std::cin >> type;
+
+	// If users input didn't match
+	if (!std::cin)
+	{
+		std::cin.clear();
+		std::cout << "That animal couldn't be found.\n";
+		type = Animal::max_animals; // set to invalid option so we don't match below
+	}
+	else
+		printAnimal(type);
+
+
+	std::cout << "\nHere is the data for the rest of the animals:\n";
+	for (auto a : Animal::types)
+	{
+		if (a != type)
+			printAnimal(a);
+	}
+
+	return 0;
+#endif
+
+#if 0
 	//17.6
+	auto shirt{ Color::blue };
+	std::cout << "Your shirt is " << shirt << '\n';
+
+	std::cout << "Enter a new color: ";
+	std::cin >> shirt;
+	if (!std::cin)
+		std::cout << "Invalid\n";
+	else
+		std::cout << "Your shirt is now " << shirt << '\n';
 #endif
 
 #if 0
