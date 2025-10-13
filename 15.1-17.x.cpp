@@ -1092,8 +1092,89 @@ void printAnimal(Animal::Type type) {
 //2. As parameters to functions or classes that want non-constexpr c-style string arguments(rather than requiring std::string_view conversion)
 
 //17.9 Pointer arithmetic and subscripting.
+//Pointer arithmetic: allows us to apply certain integer arithmetic operators to a pointer to produce new memory addresses.
+//You can do pointer addition to get next objects in memory(+1 to get the next, +2 to get two address over, etc.)
+//You can do pointer subtraction to get previous objects.
+//We can use ++ or -- but those will actually change the address held by the pointer.
+//			This is because ++ is just the same as x = x + 1; or x += 1;
+//In the case of arrays, we can use subscripting([]) on pointers to get array members.
+//This is because, for pointers, the subscripting operator is actually similar to: ptr + n, where n is contained in brackets.
+
+//17.10 C-style strings
+//These are just arrays of chars or const chars. Essentially phased out for std::string and std::string_view
+//Defined like this: const char str[] {"string"}
+//We can define the length, but that can be a huge pain when we can just type out our string.
+//You can output a c-style string like normal: cout << string;
+//It sequentially prints each char until it reaches the null terminator of the string.
+//		It is possible for the null terminator to be removed, and that will result in undefined behavior.
+//changing the value of a c-style string literal can be a pain. Can't just do: string = "new".
+//Instead, you need to use [] to change individual characters.
+//Basically, there is no reason to use these, it was just talked about because it may come up at some point.
+
+//17.11 C-style string symbolic constants
+//I'm not worrying about these. Same as c-style strings, we should just use constexpr std::string_view for similar functionality.
+
+//17.12 Multidimensional C-style arrays
+//You can create a multi-dimensional array similar to Java. Just do: int arr[3][3] to make a 3x3 grid.
+//To access elements in a 2d array you just use 2 subscripts: arr[1][1]
+//You can also create 3d arrays: arr[4][4][4]
+//2d arrays are stored in memory row by row ordered from left to right.
+//So, [0][0], [0][1], [0][2], [1][0], [1][1], [1][2], [2][0], [2][1], [2][2](for a 3x3 array)
+//Initializing can be kinda tough but best way is shown in main:
+//To loop through a 2d array you need a nested for loop.
+
+//17.13 Multidimensional std::array
+//std::array is implemented as a 1d array, but we can make it a 2d array by using another array as a template argument:
+//std::array<std::arry<int, 3>, 3> arr {{{1, 2, 3}, {1, 2, 3}, {1, 2, 3} }}; --- DOUBLE BRACES
+//Getting specific indices is the same as c-style: arr[2][2] returns element at index 2,2.
+//we can make multi-dimensional arrays less verbose with alias templates.
+template <typename T, std::size_t Row, std::size_t Col>
+using Array2d = std::array<std::array<T, Col>, Row>;
+//Then, we can use Array2d<int, 3, 4> anytime we want a 3x4 int array
+template <typename T, std::size_t Row, std::size_t Col>
+void printArray(const Array2d<T, Row, Col>& arr)
+{
+	for (const auto& arow : arr)   // get each array row
+	{
+		for (const auto& e : arow) // get each element of the row
+			std::cout << e << ' ';
+
+		std::cout << '\n';
+	}
+}
+
+//17.x
+
 
 int main() {
+#if 0
+	//17.13
+	Array2d<int, 3, 4> arr{ {
+		{1, 2, 3, 4},
+		{5, 6, 7, 8},
+		{9, 10, 11, 12}
+	} };
+	printArray(arr);
+#endif
+
+#if 0
+	//17.12
+	int arr[3][3]
+	{
+		{ 1, 2, 3 },
+		{ 1, 2, 3 },
+		{ 1, 2, 3 }
+	};
+#endif
+
+#if 0
+	//17.9
+	int x{};
+	const int* ptr{ &x };
+	//Prints memory addresses in increments of 4(hexadecimal)
+	std::cout << ptr << ' ' << ptr + 1 << ' ' << ptr + 2 << '\n';
+#endif
+
 #if 0
 	//17.6 Q1
 	std::cout << "Enter an animal: ";
