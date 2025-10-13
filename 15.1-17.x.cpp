@@ -1144,9 +1144,43 @@ void printArray(const Array2d<T, Row, Col>& arr)
 }
 
 //17.x
+//Q2
+namespace Potion {
+	enum Type {
+		healing,
+		mana,
+		speed,
+		invisibility,
+		max_types,
+	};
+	constexpr std::array types{ healing, mana, speed, invisibility };
 
+	constexpr std::array<int, max_types> costs{ 20, 30, 12, 50 };
+	constexpr std::array<std::string_view, max_types> names{"healing", "mana", "speed", "invisibility"};
+	//Make sure the sizes of the arrays are accurate.
+	static_assert(std::size(types) == max_types);
+	static_assert(std::size(costs) == max_types);
+	static_assert(std::size(names) == max_types);
+}
+
+void shop() {
+	std::cout << "Here is our selection for today: \n";
+	for (auto type : Potion::types) {
+		std::cout << type << ") " << Potion::names[type] << " costs " << Potion::costs[type] << '\n';
+	}
+}
+
+class Player {
+	std::string name{};
+	int gold{};
+};
 
 int main() {
+#if 0
+	//17.x Q2
+	shop();
+#endif
+
 #if 0
 	//17.13
 	Array2d<int, 3, 4> arr{ {
