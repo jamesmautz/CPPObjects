@@ -1063,8 +1063,38 @@ void printAnimal(Animal::Type type) {
 	std::cout << "A " << animal.name << " has " << animal.legs << " legs and says " << animal.sound << ".\n";
 }
 
+//17.7 Intro to C-style arrays
+//c-style arrays are initiated kinda different compared to vectors and std::array:
+//int testScores[30] {};
+//	The above line defines a c-style array called testScores. testScores has 30 value-initialized int elements.
+//		The number inside [] is of type size_t(or must be capable of being type cast as size_t)
+//use the brackets to access specific indices of a c-style array: testScores[1] gets the object at index 1.
+//		Additionally, when getting an index the sign conversion issues associated with std::vector/std::array don't exist.
+//c-style arrays must have their type declared:
+//	auto nums[5] {1, 2, 3, 4, 5} --- will cause an error. Must use some type which works with these values.
+//When declaring c-style arrays we can technically ignore the size declaration:
+//	const int primes[]{2, 3, 5, 7, 11} -- the compiler will deduce that the array has size 5.
+//We can't do this with an empty array: int bad[]{}; --- causes compiler array because this array has size 0, which isn't allowed.
+//c-style arrays can be made const or constexpr, with similar rules to std::array.
+
+//17.8 c-style array decay
+//when making c++ c-style arrays the designers wanted to find a way to pass c-style arrays without having to make expensive copies.
+//Somehow, they were able to find a way to pass a c-style array to a function without copying it.
+//Array decay was the solution. When a c-style array is used in an expression, the array is implicitly converted to a pointer
+//																to the element type and initialized with the first element.
+//Essentially, when we pass a c array in as a parameter we are passing by address, not passing by value.
+//	Additionally, passing by address allows us to avoid type mismatches and pass arrays of different lengths.
+//					Which wouldn't be an issue anyways for the std arrays, but part of c style definitions is their length.
+//Array decay does mean that we lose the ability to get size/length information about arrays.
+//As a result of the issues with array decay, we should avoid using c style arrays whenever possible.
+//c-style arrays do have their uses:
+//1. They are good at storing constexpr global program data. Since they are global(can be accessed anywhere), there aren't decay issues.
+//2. As parameters to functions or classes that want non-constexpr c-style string arguments(rather than requiring std::string_view conversion)
+
+//17.9 Pointer arithmetic and subscripting.
+
 int main() {
-#if 1
+#if 0
 	//17.6 Q1
 	std::cout << "Enter an animal: ";
 	Animal::Type type{};
