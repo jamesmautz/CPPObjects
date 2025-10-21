@@ -1164,21 +1164,80 @@ namespace Potion {
 }
 
 void shop() {
-	std::cout << "Here is our selection for today: \n";
+	std::cout << '\n' << "Here is our selection for today: \n";
 	for (auto type : Potion::types) {
 		std::cout << type << ") " << Potion::names[type] << " costs " << Potion::costs[type] << '\n';
 	}
+	std::cout << '\n';
 }
 
 class Player {
-	std::string name{};
-	int gold{};
+private:
+	std::string m_name{};
+	int m_gold{};
+	std::array<int, Potion::max_types> m_inventory{};
+public:
+	Player(std::string_view name) : m_name {name}, m_gold {Random::get(80, 120)}
+	{ }
+
+	int getGold() { return m_gold; }
+	int setGold(int cost) { return m_gold - cost; }
+	int inventory(Potion::Type index) const { return m_inventory[index]; }
 };
 
-int main() {
-#if 0
-	//17.x Q2
+int charNumToInt(char c)
+{
+	return c - '0';
+}
+
+void gameStart() {
+	std::cout << "Welcome to Roscoe's potion emporium!\n";
+	std::cout << "Enter your name: ";
+
+	std::string name;
+	std::cin >> name;
+
+	Player player = Player(name);
+	std::cout << "Hello, " << name << " you have " << player.getGold() << " gold.\n";
+
 	shop();
+
+	std::cout << "Enter the number of the potion you'd like to buy, or 'q' to quit: ";
+	
+	while (true) {
+		char input;
+		std::cin >> input;
+		if (input == 'q') {
+			break;
+		}
+		if (!std::cin) {
+			std::cin.clear();
+			ignoreLine();
+			std::cout << "Please enter a valid guess: ";
+			continue;
+		}
+	}
+	
+
+	std::cout << "Thanks for shopping at Roscoe's potion emporium!\n";
+}
+
+//18.1 Sorting an array using selection sort
+//Talked about this in college, could be very useful to review nonetheless.
+//Selection sort is probably the easiest sorting method to implement and understand.
+//Steps:
+//1. Start at index 0, search entire array for smallest value
+//2. Swap the smallest value found in the array with the value at index 0.
+//3. Repeat previous steps at all indices after 0 until the array is sorted.
+//This is O(N^2) time, because we have to use two loops.
+//Selection sort and implementation of our own sorting methods isn't that practical in C++ because of std::sort.
+//std::sort will probably be faster than anything I can implement on my own, at least to start.
+//std::sort(std::begin(array), std::end(array));
+
+int main() {
+#if 1
+	//17.x Q2
+	gameStart();
 #endif
 
 #if 0
